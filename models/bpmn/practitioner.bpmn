@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Process_LIP_Sub" targetNamespace="http://harper.health/bpmn/practitioner" exporter="Project Harper (reconstructed from diagram)" exporterVersion="0.3">
+  <bpmn:itemDefinition id="ItemBoolean" structureRef="java.lang.Boolean" />
+  <bpmn:process id="Process_LIP_Sub" name="Licensed Independent Practitioner (sub-process)" isExecutable="true">
+    <bpmn:documentation>Expanded Licensed Independent Practitioner sub-process. Alarm Signs for Human Trafficking is a Kogito DMN business-rule task. The &#x27;Refer to social work?&#x27; gateway is true when there are suspicious findings OR a draft referral already exists (raised by the Nurse). The practitioner then FINALIZES the draft referral; only this step throws the single &#x27;Suspect sex trafficking&#x27; signal that starts the Social Worker pool. The process then continues to Diagnosis, care, and discharge. A referral is a draft proposal until finalized.</bpmn:documentation>
+    <bpmn:property id="Prop_suspiciousFindings" name="suspiciousFindings" itemSubjectRef="ItemBoolean" />
+    <bpmn:property id="Prop_draftReferralExists" name="draftReferralExists" itemSubjectRef="ItemBoolean" />
+    <bpmn:startEvent id="StartEvent_LIP" name="">
+      <bpmn:outgoing>lf1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="UserTask_CollectPatientData" name="Collect Patient Data">
+      <bpmn:incoming>lf1</bpmn:incoming>
+      <bpmn:outgoing>lf2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:businessRuleTask id="BusinessRuleTask_AlarmSigns" name="Alarm Signs for Human Trafficking" implementation="http://www.jboss.org/drools/dmn">
+      <bpmn:documentation>Kogito DMN call. namespace=http://harper.health/dmn/alarm-signs, model=&#x27;Alarm Signs for Human Trafficking&#x27;, decision=&#x27;Suspicious findings for human trafficking?&#x27; (&gt;= configured threshold, default 2). Output: suspiciousFindings.</bpmn:documentation>
+      <bpmn:incoming>lf2</bpmn:incoming>
+      <bpmn:outgoing>lf3</bpmn:outgoing>
+      <bpmn:ioSpecification>
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_namespace" name="namespace" />
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_model" name="model" />
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_decision" name="decision" />
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_di_signsOfPhysicalAbuse" name="signsOfPhysicalAbuse" />
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_di_signsOfDrugAbuse" name="signsOfDrugAbuse" />
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_di_signsOfAnogenitalTrauma" name="signsOfAnogenitalTrauma" />
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_di_signsOfVenerealDisease" name="signsOfVenerealDisease" />
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_di_evidenceOfAbuseInOutsideRecords" name="evidenceOfAbuseInOutsideRecords" />
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_di_suspiciousBehaviorInAccompanyingAdult" name="suspiciousBehaviorInAccompanyingAdult" />
+        <bpmn:dataInput id="BusinessRuleTask_AlarmSigns_di_suspiciousBehaviorOfPatient" name="suspiciousBehaviorOfPatient" />
+        <bpmn:dataOutput id="BusinessRuleTask_AlarmSigns_do" name="suspiciousFindings" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_namespace</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_model</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_decision</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_di_signsOfPhysicalAbuse</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_di_signsOfDrugAbuse</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_di_signsOfAnogenitalTrauma</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_di_signsOfVenerealDisease</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_di_evidenceOfAbuseInOutsideRecords</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_di_suspiciousBehaviorInAccompanyingAdult</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_AlarmSigns_di_suspiciousBehaviorOfPatient</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet><bpmn:dataOutputRefs>BusinessRuleTask_AlarmSigns_do</bpmn:dataOutputRefs></bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="BusinessRuleTask_AlarmSigns_a_namespace">
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_namespace</bpmn:targetRef>
+        <bpmn:assignment><bpmn:from>http://harper.health/dmn/alarm-signs</bpmn:from><bpmn:to>BusinessRuleTask_AlarmSigns_namespace</bpmn:to></bpmn:assignment>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="BusinessRuleTask_AlarmSigns_a_model">
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_model</bpmn:targetRef>
+        <bpmn:assignment><bpmn:from>Alarm Signs for Human Trafficking</bpmn:from><bpmn:to>BusinessRuleTask_AlarmSigns_model</bpmn:to></bpmn:assignment>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="BusinessRuleTask_AlarmSigns_a_decision">
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_decision</bpmn:targetRef>
+        <bpmn:assignment><bpmn:from>Suspicious findings for human trafficking?</bpmn:from><bpmn:to>BusinessRuleTask_AlarmSigns_decision</bpmn:to></bpmn:assignment>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="la1">
+        <bpmn:sourceRef>Data_PhysicalAbuse</bpmn:sourceRef>
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_signsOfPhysicalAbuse</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="la2">
+        <bpmn:sourceRef>Data_DrugAbuse</bpmn:sourceRef>
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_signsOfDrugAbuse</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="la3">
+        <bpmn:sourceRef>Data_AnogenitalTrauma</bpmn:sourceRef>
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_signsOfAnogenitalTrauma</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="la4">
+        <bpmn:sourceRef>Data_VenerealDisease</bpmn:sourceRef>
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_signsOfVenerealDisease</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="la5">
+        <bpmn:sourceRef>Data_EvidenceOutside</bpmn:sourceRef>
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_evidenceOfAbuseInOutsideRecords</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="la6">
+        <bpmn:sourceRef>Data_SuspAccompany</bpmn:sourceRef>
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_suspiciousBehaviorInAccompanyingAdult</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="la7">
+        <bpmn:sourceRef>Data_SuspPatient</bpmn:sourceRef>
+        <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_suspiciousBehaviorOfPatient</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="BusinessRuleTask_AlarmSigns_doa">
+        <bpmn:sourceRef>BusinessRuleTask_AlarmSigns_do</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_suspiciousFindings</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:businessRuleTask>
+    <bpmn:userTask id="UserTask_ClinicianExam" name="Clinician completes examination">
+      <bpmn:incoming>lf3</bpmn:incoming>
+      <bpmn:outgoing>lf4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:task id="Task_FindingsRecorded" name="Findings recorded in medical record">
+      <bpmn:incoming>lf4</bpmn:incoming>
+      <bpmn:outgoing>lf5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_SuspiciousFindings" name="Refer to social work?" default="lf8">
+      <bpmn:incoming>lf5</bpmn:incoming>
+      <bpmn:outgoing>lf6</bpmn:outgoing>
+      <bpmn:outgoing>lf8</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="UserTask_FinalizeReferral" name="Finalize referral">
+      <bpmn:documentation>Licensed Independent Practitioner reviews and finalizes the draft social-work referral. Only a finalized referral routes to the Social Worker (throws the signal); this also finalizes a draft raised earlier by the Nurse. FHIR Task status draft -&gt; requested.</bpmn:documentation>
+      <bpmn:incoming>lf6</bpmn:incoming>
+      <bpmn:outgoing>lf6b</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:intermediateThrowEvent id="Throw_SuspectTrafficking_LIP" name="Suspect sex trafficking">
+      <bpmn:incoming>lf6b</bpmn:incoming>
+      <bpmn:outgoing>lf7</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SED_Throw_SuspectTrafficking_LIP" signalRef="Signal_SuspectTrafficking" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:task id="Task_Diagnosis" name="Diagnosis">
+      <bpmn:incoming>lf7</bpmn:incoming>
+      <bpmn:incoming>lf8</bpmn:incoming>
+      <bpmn:outgoing>lf9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ImmediateCare" name="Immediate care delivered">
+      <bpmn:incoming>lf9</bpmn:incoming>
+      <bpmn:outgoing>lf10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_DischargePlanning" name="Discharge Planning">
+      <bpmn:incoming>lf10</bpmn:incoming>
+      <bpmn:outgoing>lf11</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_LIP" name="">
+      <bpmn:incoming>lf11</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataObjectReference id="Data_PhysicalAbuse" name="Signs of physical abuse" dataObjectRef="Obj_Data_PhysicalAbuse" />
+    <bpmn:dataObject id="Obj_Data_PhysicalAbuse" />
+    <bpmn:dataObjectReference id="Data_DrugAbuse" name="Signs of drug abuse" dataObjectRef="Obj_Data_DrugAbuse" />
+    <bpmn:dataObject id="Obj_Data_DrugAbuse" />
+    <bpmn:dataObjectReference id="Data_AnogenitalTrauma" name="Signs of anogenital trauma" dataObjectRef="Obj_Data_AnogenitalTrauma" />
+    <bpmn:dataObject id="Obj_Data_AnogenitalTrauma" />
+    <bpmn:dataObjectReference id="Data_VenerealDisease" name="Signs of venereal disease" dataObjectRef="Obj_Data_VenerealDisease" />
+    <bpmn:dataObject id="Obj_Data_VenerealDisease" />
+    <bpmn:dataObjectReference id="Data_EvidenceOutside" name="Evidence of abuse in outside records" dataObjectRef="Obj_Data_EvidenceOutside" />
+    <bpmn:dataObject id="Obj_Data_EvidenceOutside" />
+    <bpmn:dataObjectReference id="Data_SuspAccompany" name="Suspicious behavior in accompanying adult" dataObjectRef="Obj_Data_SuspAccompany" />
+    <bpmn:dataObject id="Obj_Data_SuspAccompany" />
+    <bpmn:dataObjectReference id="Data_SuspPatient" name="Suspicious behavior of patient" dataObjectRef="Obj_Data_SuspPatient" />
+    <bpmn:dataObject id="Obj_Data_SuspPatient" />
+    <bpmn:dataObjectReference id="Data_NumAlarmSigns" name="Number of alarm signs" dataObjectRef="Obj_Data_NumAlarmSigns" />
+    <bpmn:dataObject id="Obj_Data_NumAlarmSigns" />
+    <bpmn:dataObjectReference id="Data_SuspFindingsHT" name="Suspicious findings for human trafficking?" dataObjectRef="Obj_Data_SuspFindingsHT" />
+    <bpmn:dataObject id="Obj_Data_SuspFindingsHT" />
+    <bpmn:sequenceFlow id="lf1" sourceRef="StartEvent_LIP" targetRef="UserTask_CollectPatientData" />
+    <bpmn:sequenceFlow id="lf2" sourceRef="UserTask_CollectPatientData" targetRef="BusinessRuleTask_AlarmSigns" />
+    <bpmn:sequenceFlow id="lf3" sourceRef="BusinessRuleTask_AlarmSigns" targetRef="UserTask_ClinicianExam" />
+    <bpmn:sequenceFlow id="lf4" sourceRef="UserTask_ClinicianExam" targetRef="Task_FindingsRecorded" />
+    <bpmn:sequenceFlow id="lf5" sourceRef="Task_FindingsRecorded" targetRef="Gateway_SuspiciousFindings" />
+    <bpmn:sequenceFlow id="lf6" name="Yes" sourceRef="Gateway_SuspiciousFindings" targetRef="UserTask_FinalizeReferral">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">suspiciousFindings == true or draftReferralExists == true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="lf6b" sourceRef="UserTask_FinalizeReferral" targetRef="Throw_SuspectTrafficking_LIP" />
+    <bpmn:sequenceFlow id="lf7" sourceRef="Throw_SuspectTrafficking_LIP" targetRef="Task_Diagnosis" />
+    <bpmn:sequenceFlow id="lf8" name="No" sourceRef="Gateway_SuspiciousFindings" targetRef="Task_Diagnosis" />
+    <bpmn:sequenceFlow id="lf9" sourceRef="Task_Diagnosis" targetRef="Task_ImmediateCare" />
+    <bpmn:sequenceFlow id="lf10" sourceRef="Task_ImmediateCare" targetRef="Task_DischargePlanning" />
+    <bpmn:sequenceFlow id="lf11" sourceRef="Task_DischargePlanning" targetRef="EndEvent_LIP" />
+  </bpmn:process>
+  <bpmn:signal id="Signal_SuspectTrafficking" name="Suspect sex trafficking" />
+  <bpmndi:BPMNDiagram id="Diag_Process_LIP_Sub">
+    <bpmndi:BPMNPlane id="Plane_Process_LIP_Sub" bpmnElement="Process_LIP_Sub">
+      <bpmndi:BPMNShape id="Shape_StartEvent_LIP" bpmnElement="StartEvent_LIP">
+        <dc:Bounds x="152" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_CollectPatientData" bpmnElement="UserTask_CollectPatientData">
+        <dc:Bounds x="240" y="115" width="120" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_BusinessRuleTask_AlarmSigns" bpmnElement="BusinessRuleTask_AlarmSigns">
+        <dc:Bounds x="410" y="115" width="120" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_ClinicianExam" bpmnElement="UserTask_ClinicianExam">
+        <dc:Bounds x="580" y="115" width="120" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_FindingsRecorded" bpmnElement="Task_FindingsRecorded">
+        <dc:Bounds x="750" y="115" width="120" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_SuspiciousFindings" bpmnElement="Gateway_SuspiciousFindings">
+        <dc:Bounds x="920" y="130" width="40" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_FinalizeReferral" bpmnElement="UserTask_FinalizeReferral">
+        <dc:Bounds x="980" y="14" width="130" height="48" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Throw_SuspectTrafficking_LIP" bpmnElement="Throw_SuspectTrafficking_LIP">
+        <dc:Bounds x="1200" y="20" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Diagnosis" bpmnElement="Task_Diagnosis">
+        <dc:Bounds x="1000" y="255" width="120" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ImmediateCare" bpmnElement="Task_ImmediateCare">
+        <dc:Bounds x="1160" y="255" width="120" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DischargePlanning" bpmnElement="Task_DischargePlanning">
+        <dc:Bounds x="1320" y="255" width="120" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_LIP" bpmnElement="EndEvent_LIP">
+        <dc:Bounds x="1480" y="272" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_PhysicalAbuse" bpmnElement="Data_PhysicalAbuse">
+        <dc:Bounds x="460" y="250" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_DrugAbuse" bpmnElement="Data_DrugAbuse">
+        <dc:Bounds x="460" y="330" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_AnogenitalTrauma" bpmnElement="Data_AnogenitalTrauma">
+        <dc:Bounds x="460" y="410" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_VenerealDisease" bpmnElement="Data_VenerealDisease">
+        <dc:Bounds x="460" y="490" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_EvidenceOutside" bpmnElement="Data_EvidenceOutside">
+        <dc:Bounds x="460" y="570" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_SuspAccompany" bpmnElement="Data_SuspAccompany">
+        <dc:Bounds x="460" y="650" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_SuspPatient" bpmnElement="Data_SuspPatient">
+        <dc:Bounds x="460" y="730" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_NumAlarmSigns" bpmnElement="Data_NumAlarmSigns">
+        <dc:Bounds x="380" y="20" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_SuspFindingsHT" bpmnElement="Data_SuspFindingsHT">
+        <dc:Bounds x="520" y="20" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_lf1" bpmnElement="lf1">
+        <di:waypoint x="188" y="150.0" />
+        <di:waypoint x="240" y="150.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf2" bpmnElement="lf2">
+        <di:waypoint x="360" y="150.0" />
+        <di:waypoint x="410" y="150.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf3" bpmnElement="lf3">
+        <di:waypoint x="530" y="150.0" />
+        <di:waypoint x="580" y="150.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf4" bpmnElement="lf4">
+        <di:waypoint x="700" y="150.0" />
+        <di:waypoint x="750" y="150.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf5" bpmnElement="lf5">
+        <di:waypoint x="870" y="150.0" />
+        <di:waypoint x="920" y="150.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf6" bpmnElement="lf6">
+        <di:waypoint x="940" y="130" />
+        <di:waypoint x="940" y="38" />
+        <di:waypoint x="980" y="38" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf6b" bpmnElement="lf6b">
+        <di:waypoint x="1110" y="38" />
+        <di:waypoint x="1200" y="38" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf7" bpmnElement="lf7">
+        <di:waypoint x="1218" y="56" />
+        <di:waypoint x="1218" y="290" />
+        <di:waypoint x="1120" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf8" bpmnElement="lf8">
+        <di:waypoint x="940" y="170" />
+        <di:waypoint x="940" y="290" />
+        <di:waypoint x="1000" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf9" bpmnElement="lf9">
+        <di:waypoint x="1120" y="290.0" />
+        <di:waypoint x="1160" y="290.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf10" bpmnElement="lf10">
+        <di:waypoint x="1280" y="290.0" />
+        <di:waypoint x="1320" y="290.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf11" bpmnElement="lf11">
+        <di:waypoint x="1440" y="290.0" />
+        <di:waypoint x="1480" y="290.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_la1" bpmnElement="la1">
+        <di:waypoint x="496" y="275" />
+        <di:waypoint x="455" y="185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_la2" bpmnElement="la2">
+        <di:waypoint x="496" y="355" />
+        <di:waypoint x="462" y="185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_la3" bpmnElement="la3">
+        <di:waypoint x="496" y="435" />
+        <di:waypoint x="468" y="185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_la4" bpmnElement="la4">
+        <di:waypoint x="496" y="515" />
+        <di:waypoint x="474" y="185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_la5" bpmnElement="la5">
+        <di:waypoint x="496" y="595" />
+        <di:waypoint x="480" y="185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_la6" bpmnElement="la6">
+        <di:waypoint x="496" y="675" />
+        <di:waypoint x="486" y="185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_la7" bpmnElement="la7">
+        <di:waypoint x="496" y="755" />
+        <di:waypoint x="492" y="185" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
