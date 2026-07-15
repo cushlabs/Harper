@@ -3,7 +3,7 @@
              xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
              xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
              xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
-             id="Definitions_AlarmSigns" name="Alarm Signs for Human Trafficking"
+             id="Definitions_AlarmSigns" name="AlarmSigns"
              namespace="http://harper.health/dmn/alarm-signs">
 
   <inputData id="ID_phys" name="Signs of physical abuse">

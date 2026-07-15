@@ -3,7 +3,7 @@
              xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
              xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
              xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
-             id="Definitions_EDPrescreen" name="ED Prescreen"
+             id="Definitions_EDPrescreen" name="EDPrescreen"
              namespace="http://harper.health/dmn/ed-prescreen">
 
   <inputData id="ID_standingOrder" name="Standing order for survey administration?">

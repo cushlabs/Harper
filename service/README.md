@@ -60,6 +60,22 @@ kubectl apply -f target/kubernetes/kubernetes.yml
 
 Deployment settings (namespace, replicas, probes) are in `src/main/resources/application.properties`.
 
+## Tests
+
+Unit and integration tests run under a single command:
+
+```bash
+mvn verify     # unit (surefire) + integration (*IT via failsafe) + coverage
+mvn test       # unit only
+```
+
+- **Decision tests** (`*DecisionTest`, `@QuarkusTest`) exercise the DMN endpoints — `/EDPrescreen`, `/GreenbaumScreen`, `/AlarmSigns` — asserting the ≥ 2 Greenbaum rule, the 13–17 prescreen band, and the alarm-signs threshold.
+- **`SmokeIT`** (`@QuarkusIntegrationTest`) boots the packaged app and checks readiness.
+- **Coverage** (via `quarkus-jacoco`) is written to `target/jacoco-report/index.html`.
+- **CI** (`.github/workflows/ci.yml`) runs `mvn verify` on every push and pull request — the going-forward gate: no process or decision merges without a test.
+
+The endpoint/JSON shapes in the decision tests follow Kogito's default DMN mapping (context keyed by input-data / decision names). Confirm them against the generated OpenAPI (`/q/openapi`) on first run and adjust if your Kogito version differs. Grow the suite with a `*DecisionTest` per DMN and a process test per executable BPMN (asserting the draft → finalize → signal path).
+
 ## Known adjustments (scaffold → clean build)
 
 These models were reconstructed for design and interoperability, not yet hardened for one engine's strict code generation. Expect a short iteration to a green build:

@@ -57,6 +57,10 @@ Then open **http://localhost:8000** (API docs at `/docs`). You can also open `pr
 
 The [`service/`](service/) module scaffolds the Kogito/Quarkus app that executes these BPMN/DMN files on the real engine (Kubernetes-ready via `quarkus-kubernetes`). Remaining work: harden the models for a clean Kogito build (see [`service/README.md`](service/README.md)), add a typed data model, and back it with a HAPI FHIR server.
 
+## Tests & CI
+
+The `service/` module is tested under one command — `mvn verify` (unit + integration + coverage) — and [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs it on every push and pull request. Going forward, new processes and decisions land with tests. See [`service/README.md`](service/README.md#tests).
+
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE).

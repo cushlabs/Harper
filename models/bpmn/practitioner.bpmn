@@ -48,7 +48,7 @@
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="BusinessRuleTask_AlarmSigns_a_model">
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_model</bpmn:targetRef>
-        <bpmn:assignment><bpmn:from>Alarm Signs for Human Trafficking</bpmn:from><bpmn:to>BusinessRuleTask_AlarmSigns_model</bpmn:to></bpmn:assignment>
+        <bpmn:assignment><bpmn:from>AlarmSigns</bpmn:from><bpmn:to>BusinessRuleTask_AlarmSigns_model</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="BusinessRuleTask_AlarmSigns_a_decision">
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_decision</bpmn:targetRef>
@@ -150,7 +150,7 @@
     <bpmn:sequenceFlow id="lf4" sourceRef="UserTask_ClinicianExam" targetRef="Task_FindingsRecorded" />
     <bpmn:sequenceFlow id="lf5" sourceRef="Task_FindingsRecorded" targetRef="Gateway_SuspiciousFindings" />
     <bpmn:sequenceFlow id="lf6" name="Yes" sourceRef="Gateway_SuspiciousFindings" targetRef="UserTask_FinalizeReferral">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">suspiciousFindings == true or draftReferralExists == true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="http://www.java.com/java">return suspiciousFindings == true || draftReferralExists == true;</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="lf6b" sourceRef="UserTask_FinalizeReferral" targetRef="Throw_SuspectTrafficking_LIP" />
     <bpmn:sequenceFlow id="lf7" sourceRef="Throw_SuspectTrafficking_LIP" targetRef="Task_Diagnosis" />

@@ -3,7 +3,7 @@
              xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
              xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
              xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
-             id="Definitions_Greenbaum" name="Screening Tool of Greenbaum"
+             id="Definitions_Greenbaum" name="GreenbaumScreen"
              namespace="http://harper.health/dmn/greenbaum">
 
   <inputData id="ID_trauma" name="History of significant trauma?">

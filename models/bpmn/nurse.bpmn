@@ -40,7 +40,7 @@
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="BusinessRuleTask_EDPrescreen_a_model">
         <bpmn:targetRef>BusinessRuleTask_EDPrescreen_model</bpmn:targetRef>
-        <bpmn:assignment><bpmn:from>ED Prescreen</bpmn:from><bpmn:to>BusinessRuleTask_EDPrescreen_model</bpmn:to></bpmn:assignment>
+        <bpmn:assignment><bpmn:from>EDPrescreen</bpmn:from><bpmn:to>BusinessRuleTask_EDPrescreen_model</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="BusinessRuleTask_EDPrescreen_a_decision">
         <bpmn:targetRef>BusinessRuleTask_EDPrescreen_decision</bpmn:targetRef>
@@ -106,7 +106,7 @@
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="BusinessRuleTask_Greenbaum_a_model">
         <bpmn:targetRef>BusinessRuleTask_Greenbaum_model</bpmn:targetRef>
-        <bpmn:assignment><bpmn:from>Screening Tool of Greenbaum</bpmn:from><bpmn:to>BusinessRuleTask_Greenbaum_model</bpmn:to></bpmn:assignment>
+        <bpmn:assignment><bpmn:from>GreenbaumScreen</bpmn:from><bpmn:to>BusinessRuleTask_Greenbaum_model</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="BusinessRuleTask_Greenbaum_a_decision">
         <bpmn:targetRef>BusinessRuleTask_Greenbaum_decision</bpmn:targetRef>
@@ -187,12 +187,12 @@
     <bpmn:sequenceFlow id="nf2" sourceRef="ManualTask_TriageData" targetRef="BusinessRuleTask_EDPrescreen" />
     <bpmn:sequenceFlow id="nf3" sourceRef="BusinessRuleTask_EDPrescreen" targetRef="Gateway_Screen" />
     <bpmn:sequenceFlow id="nf4" name="Yes" sourceRef="Gateway_Screen" targetRef="ManualTask_NurseCollects">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">shouldScreen == true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="http://www.java.com/java">return shouldScreen == true;</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="nf5" sourceRef="ManualTask_NurseCollects" targetRef="BusinessRuleTask_Greenbaum" />
     <bpmn:sequenceFlow id="nf6" sourceRef="BusinessRuleTask_Greenbaum" targetRef="Gateway_AtRisk" />
     <bpmn:sequenceFlow id="nf7" name="Yes" sourceRef="Gateway_AtRisk" targetRef="Task_DraftReferral">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">atRisk == true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="http://www.java.com/java">return atRisk == true;</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="nf8" sourceRef="Task_DraftReferral" targetRef="End_SexTraffickingSuspected" />
     <bpmn:sequenceFlow id="nf9" name="No" sourceRef="Gateway_AtRisk" targetRef="End_NoSexTrafficking" />
