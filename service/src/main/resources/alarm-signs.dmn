@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
+             id="Definitions_AlarmSigns" name="Alarm Signs for Human Trafficking"
+             namespace="http://harper.health/dmn/alarm-signs">
+
+  <inputData id="ID_phys" name="Signs of physical abuse">
+    <variable id="var_phys" name="signsOfPhysicalAbuse" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_drug" name="Signs of drug abuse">
+    <variable id="var_drug" name="signsOfDrugAbuse" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_anog" name="Signs of anogenital trauma">
+    <variable id="var_anog" name="signsOfAnogenitalTrauma" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_ven" name="Signs of venereal disease">
+    <variable id="var_ven" name="signsOfVenerealDisease" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_evid" name="Evidence of abuse in outside records">
+    <variable id="var_evid" name="evidenceOfAbuseInOutsideRecords" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_accsusp" name="Suspicious behavior in accompanying adult">
+    <variable id="var_accsusp" name="suspiciousBehaviorInAccompanyingAdult" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_patsusp" name="Suspicious behavior of patient">
+    <variable id="var_patsusp" name="suspiciousBehaviorOfPatient" typeRef="boolean" />
+  </inputData>
+
+  <decision id="Decision_NumAlarmSigns" name="Number of alarm signs">
+    <description>Counts the number of positive human-trafficking alarm signs recorded during the examination.</description>
+    <variable id="var_numAlarm" name="numberOfAlarmSigns" typeRef="number" />
+    <informationRequirement id="ir_as_1"><requiredInput href="#ID_phys" /></informationRequirement>
+    <informationRequirement id="ir_as_2"><requiredInput href="#ID_drug" /></informationRequirement>
+    <informationRequirement id="ir_as_3"><requiredInput href="#ID_anog" /></informationRequirement>
+    <informationRequirement id="ir_as_4"><requiredInput href="#ID_ven" /></informationRequirement>
+    <informationRequirement id="ir_as_5"><requiredInput href="#ID_evid" /></informationRequirement>
+    <informationRequirement id="ir_as_6"><requiredInput href="#ID_accsusp" /></informationRequirement>
+    <informationRequirement id="ir_as_7"><requiredInput href="#ID_patsusp" /></informationRequirement>
+    <literalExpression id="le_numAlarm">
+      <text>(if signsOfPhysicalAbuse then 1 else 0)
++ (if signsOfDrugAbuse then 1 else 0)
++ (if signsOfAnogenitalTrauma then 1 else 0)
++ (if signsOfVenerealDisease then 1 else 0)
++ (if evidenceOfAbuseInOutsideRecords then 1 else 0)
++ (if suspiciousBehaviorInAccompanyingAdult then 1 else 0)
++ (if suspiciousBehaviorOfPatient then 1 else 0)</text>
+    </literalExpression>
+  </decision>
+
+  <decision id="Decision_SuspFindings" name="Suspicious findings for human trafficking?">
+    <description>True when the number of alarm signs meets or exceeds the configured threshold (default 2). Threshold is a placeholder to be confirmed with clinical governance.</description>
+    <variable id="var_suspFindings" name="suspiciousFindings" typeRef="boolean" />
+    <informationRequirement id="ir_susp_1"><requiredDecision href="#Decision_NumAlarmSigns" /></informationRequirement>
+    <literalExpression id="le_suspFindings">
+      <text>numberOfAlarmSigns >= 2</text>
+    </literalExpression>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_AlarmSigns">
+      <dmndi:DMNShape id="DMNShape_susp" dmnElementRef="Decision_SuspFindings">
+        <dc:Bounds x="500" y="40" width="220" height="70" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_num" dmnElementRef="Decision_NumAlarmSigns">
+        <dc:Bounds x="500" y="180" width="220" height="70" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_as1" dmnElementRef="ID_phys"><dc:Bounds x="40" y="360" width="150" height="60" /></dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_as2" dmnElementRef="ID_drug"><dc:Bounds x="220" y="360" width="150" height="60" /></dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_as3" dmnElementRef="ID_anog"><dc:Bounds x="400" y="360" width="150" height="60" /></dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_as4" dmnElementRef="ID_ven"><dc:Bounds x="580" y="360" width="150" height="60" /></dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_as5" dmnElementRef="ID_evid"><dc:Bounds x="760" y="360" width="150" height="60" /></dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_as6" dmnElementRef="ID_accsusp"><dc:Bounds x="940" y="360" width="150" height="60" /></dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_as7" dmnElementRef="ID_patsusp"><dc:Bounds x="1120" y="360" width="150" height="60" /></dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_susp" dmnElementRef="ir_susp_1"><di:waypoint x="610" y="180" /><di:waypoint x="610" y="110" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_as1" dmnElementRef="ir_as_1"><di:waypoint x="115" y="360" /><di:waypoint x="540" y="250" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_as2" dmnElementRef="ir_as_2"><di:waypoint x="295" y="360" /><di:waypoint x="565" y="250" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_as3" dmnElementRef="ir_as_3"><di:waypoint x="475" y="360" /><di:waypoint x="590" y="250" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_as4" dmnElementRef="ir_as_4"><di:waypoint x="655" y="360" /><di:waypoint x="615" y="250" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_as5" dmnElementRef="ir_as_5"><di:waypoint x="835" y="360" /><di:waypoint x="640" y="250" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_as6" dmnElementRef="ir_as_6"><di:waypoint x="1015" y="360" /><di:waypoint x="665" y="250" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_as7" dmnElementRef="ir_as_7"><di:waypoint x="1195" y="360" /><di:waypoint x="690" y="250" /></dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

@@ -7,6 +7,11 @@ env/
 *.egg-info/
 .pytest_cache/
 
+# Java / Maven
+target/
+*.class
+.mvn/timing.properties
+
 # Node
 node_modules/
 

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_Harper_Registrar"
+                  targetNamespace="http://harper.health/bpmn/registrar"
+                  exporter="Project Harper (reconstructed from diagram)" exporterVersion="0.1">
+
+  <bpmn:process id="Process_Registrar_Sub" name="Registrar (sub-process)" isExecutable="false">
+    <bpmn:documentation>Expanded "Registrar" sub-process from the top-level ED trafficking-detection collaboration. The Request/Receive Outside Records message events correspond to the top-level message flows with the Outside Medical Records pool.</bpmn:documentation>
+
+    <bpmn:startEvent id="StartEvent_Registrar" name="">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="Task_RegistrationArmband" name="Registration and armband">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_TriageRoom" name="Triage room">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_InitialDataCollection" name="Initial data collection">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_EstablishChiefComplaint" name="Establish chief complaint">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:intermediateThrowEvent id="IntermediateThrow_RequestRecords" name="Request Outside Records">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MED_Request" />
+    </bpmn:intermediateThrowEvent>
+
+    <bpmn:intermediateCatchEvent id="IntermediateCatch_ReceiveRecords" name="Receive Outside Records">
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MED_Receive" />
+    </bpmn:intermediateCatchEvent>
+
+    <bpmn:task id="Task_OutsideRecordsToEHR" name="Outside records to EHR">
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+      <bpmn:property id="Prop_OutRecords" name="outsideRecords" />
+      <bpmn:dataOutputAssociation id="DataOut_EHR">
+        <bpmn:targetRef>DataStoreRef_EHR</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:task>
+
+    <bpmn:endEvent id="EndEvent_Registrar" name="">
+      <bpmn:incoming>Flow_8</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:dataStoreReference id="DataStoreRef_EHR" name="EHR" />
+
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_Registrar" targetRef="Task_RegistrationArmband" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_RegistrationArmband" targetRef="Task_TriageRoom" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_TriageRoom" targetRef="Task_InitialDataCollection" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_InitialDataCollection" targetRef="Task_EstablishChiefComplaint" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_EstablishChiefComplaint" targetRef="IntermediateThrow_RequestRecords" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="IntermediateThrow_RequestRecords" targetRef="IntermediateCatch_ReceiveRecords" />
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="IntermediateCatch_ReceiveRecords" targetRef="Task_OutsideRecordsToEHR" />
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Task_OutsideRecordsToEHR" targetRef="EndEvent_Registrar" />
+  </bpmn:process>
+
+  <!-- ============ DIAGRAM INTERCHANGE ============ -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Registrar">
+    <bpmndi:BPMNPlane id="BPMNPlane_Registrar" bpmnElement="Process_Registrar_Sub">
+
+      <bpmndi:BPMNShape id="Shape_Start" bpmnElement="StartEvent_Registrar">
+        <dc:Bounds x="160" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_RegArmband" bpmnElement="Task_RegistrationArmband">
+        <dc:Bounds x="240" y="180" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Triage" bpmnElement="Task_TriageRoom">
+        <dc:Bounds x="410" y="180" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_InitialData" bpmnElement="Task_InitialDataCollection">
+        <dc:Bounds x="580" y="180" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ChiefComplaint" bpmnElement="Task_EstablishChiefComplaint">
+        <dc:Bounds x="750" y="180" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Request" bpmnElement="IntermediateThrow_RequestRecords">
+        <dc:Bounds x="920" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="893" y="245" width="90" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Receive" bpmnElement="IntermediateCatch_ReceiveRecords">
+        <dc:Bounds x="1010" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="983" y="245" width="90" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ToEHR" bpmnElement="Task_OutsideRecordsToEHR">
+        <dc:Bounds x="1090" y="180" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End" bpmnElement="EndEvent_Registrar">
+        <dc:Bounds x="1260" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_DataStoreEHR" bpmnElement="DataStoreRef_EHR">
+        <dc:Bounds x="1125" y="360" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1138" y="415" width="24" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Edge_1" bpmnElement="Flow_1">
+        <di:waypoint x="196" y="220" /><di:waypoint x="240" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_2" bpmnElement="Flow_2">
+        <di:waypoint x="360" y="220" /><di:waypoint x="410" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_3" bpmnElement="Flow_3">
+        <di:waypoint x="530" y="220" /><di:waypoint x="580" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_4" bpmnElement="Flow_4">
+        <di:waypoint x="700" y="220" /><di:waypoint x="750" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_5" bpmnElement="Flow_5">
+        <di:waypoint x="870" y="220" /><di:waypoint x="920" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_6" bpmnElement="Flow_6">
+        <di:waypoint x="956" y="220" /><di:waypoint x="1010" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_7" bpmnElement="Flow_7">
+        <di:waypoint x="1046" y="220" /><di:waypoint x="1090" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_8" bpmnElement="Flow_8">
+        <di:waypoint x="1210" y="220" /><di:waypoint x="1260" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_DataOut" bpmnElement="DataOut_EHR">
+        <di:waypoint x="1150" y="260" /><di:waypoint x="1150" y="360" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

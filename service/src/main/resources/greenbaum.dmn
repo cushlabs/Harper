@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
+             id="Definitions_Greenbaum" name="Screening Tool of Greenbaum"
+             namespace="http://harper.health/dmn/greenbaum">
+
+  <inputData id="ID_trauma" name="History of significant trauma?">
+    <variable id="var_trauma" name="historyOfSignificantTrauma" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_runaway" name="History of running away from home?">
+    <variable id="var_runaway" name="historyOfRunningAway" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_alcohol" name="History of alcohol or drug abuse?">
+    <variable id="var_alcohol" name="historyOfAlcoholOrDrugAbuse" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_law" name="Ever involved with law enforcement?">
+    <variable id="var_law" name="everInvolvedWithLawEnforcement" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_std" name="History of sexually transmitted disease?">
+    <variable id="var_std" name="historyOfSTD" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_partners" name="Number of sexual partners">
+    <variable id="var_partners" name="numberOfSexualPartners" typeRef="number" />
+  </inputData>
+
+  <decision id="Decision_Greenbaum" name="Screening Tool of Greenbaum">
+    <description>Validated Short Screen for Child Sex Trafficking (Greenbaum). Positive ("At risk?") when two or more of the six items are positive; the partner item counts positive when the number of partners exceeds five. Validated cutoff >= 2 (sensitivity 92%, specificity 73%, NPV 97%).</description>
+    <variable id="var_atRisk" name="atRisk" typeRef="boolean" />
+    <informationRequirement id="ir_gb_1"><requiredInput href="#ID_trauma" /></informationRequirement>
+    <informationRequirement id="ir_gb_2"><requiredInput href="#ID_runaway" /></informationRequirement>
+    <informationRequirement id="ir_gb_3"><requiredInput href="#ID_alcohol" /></informationRequirement>
+    <informationRequirement id="ir_gb_4"><requiredInput href="#ID_law" /></informationRequirement>
+    <informationRequirement id="ir_gb_5"><requiredInput href="#ID_std" /></informationRequirement>
+    <informationRequirement id="ir_gb_6"><requiredInput href="#ID_partners" /></informationRequirement>
+    <literalExpression id="le_greenbaum">
+      <text>(
+  (if historyOfSignificantTrauma then 1 else 0)
+  + (if historyOfRunningAway then 1 else 0)
+  + (if historyOfAlcoholOrDrugAbuse then 1 else 0)
+  + (if everInvolvedWithLawEnforcement then 1 else 0)
+  + (if historyOfSTD then 1 else 0)
+  + (if numberOfSexualPartners > 5 then 1 else 0)
+) >= 2</text>
+    </literalExpression>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_Greenbaum">
+      <dmndi:DMNShape id="DMNShape_dec" dmnElementRef="Decision_Greenbaum">
+        <dc:Bounds x="520" y="60" width="200" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_gb1" dmnElementRef="ID_trauma">
+        <dc:Bounds x="60" y="300" width="150" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_gb2" dmnElementRef="ID_runaway">
+        <dc:Bounds x="250" y="300" width="150" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_gb3" dmnElementRef="ID_alcohol">
+        <dc:Bounds x="440" y="300" width="150" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_gb4" dmnElementRef="ID_law">
+        <dc:Bounds x="630" y="300" width="150" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_gb5" dmnElementRef="ID_std">
+        <dc:Bounds x="820" y="300" width="150" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_gb6" dmnElementRef="ID_partners">
+        <dc:Bounds x="1010" y="300" width="150" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_gb1" dmnElementRef="ir_gb_1"><di:waypoint x="135" y="300" /><di:waypoint x="560" y="140" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_gb2" dmnElementRef="ir_gb_2"><di:waypoint x="325" y="300" /><di:waypoint x="585" y="140" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_gb3" dmnElementRef="ir_gb_3"><di:waypoint x="515" y="300" /><di:waypoint x="605" y="140" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_gb4" dmnElementRef="ir_gb_4"><di:waypoint x="705" y="300" /><di:waypoint x="635" y="140" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_gb5" dmnElementRef="ir_gb_5"><di:waypoint x="895" y="300" /><di:waypoint x="660" y="140" /></dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_gb6" dmnElementRef="ir_gb_6"><di:waypoint x="1085" y="300" /><di:waypoint x="680" y="140" /></dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

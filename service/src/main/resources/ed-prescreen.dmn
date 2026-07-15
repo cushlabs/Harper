@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
+             id="Definitions_EDPrescreen" name="ED Prescreen"
+             namespace="http://harper.health/dmn/ed-prescreen">
+
+  <inputData id="ID_standingOrder" name="Standing order for survey administration?">
+    <variable id="var_standingOrder" name="standingOrder" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_highRisk" name="High risk chief complaint?">
+    <variable id="var_highRisk" name="highRiskChiefComplaint" typeRef="boolean" />
+  </inputData>
+  <inputData id="ID_age" name="Age in years">
+    <variable id="var_age" name="ageInYears" typeRef="number" />
+  </inputData>
+
+  <decision id="Decision_EDPrescreen" name="ED Prescreen">
+    <description>Should the patient be screened? Prescreen gate for administering the Greenbaum screen. Screen when a standing order exists, the chief complaint is high-risk, and the patient is within the validated adolescent band (13-17). Thresholds are configurable.</description>
+    <variable id="var_shouldScreen" name="shouldScreen" typeRef="boolean" />
+    <informationRequirement id="ir_edp_1"><requiredInput href="#ID_standingOrder" /></informationRequirement>
+    <informationRequirement id="ir_edp_2"><requiredInput href="#ID_highRisk" /></informationRequirement>
+    <informationRequirement id="ir_edp_3"><requiredInput href="#ID_age" /></informationRequirement>
+    <decisionTable id="dt_edprescreen" hitPolicy="FIRST" outputLabel="shouldScreen">
+      <input id="in_edp_1" label="Standing order for survey administration?">
+        <inputExpression id="ie_edp_1" typeRef="boolean"><text>standingOrder</text></inputExpression>
+      </input>
+      <input id="in_edp_2" label="High risk chief complaint?">
+        <inputExpression id="ie_edp_2" typeRef="boolean"><text>highRiskChiefComplaint</text></inputExpression>
+      </input>
+      <input id="in_edp_3" label="Age in years">
+        <inputExpression id="ie_edp_3" typeRef="number"><text>ageInYears</text></inputExpression>
+      </input>
+      <output id="out_edp_1" name="shouldScreen" typeRef="boolean" />
+      <rule id="rule_edp_1">
+        <inputEntry id="rule_edp_1_i1"><text>false</text></inputEntry>
+        <inputEntry id="rule_edp_1_i2"><text>-</text></inputEntry>
+        <inputEntry id="rule_edp_1_i3"><text>-</text></inputEntry>
+        <outputEntry id="rule_edp_1_o1"><text>false</text></outputEntry>
+      </rule>
+      <rule id="rule_edp_2">
+        <inputEntry id="rule_edp_2_i1"><text>-</text></inputEntry>
+        <inputEntry id="rule_edp_2_i2"><text>false</text></inputEntry>
+        <inputEntry id="rule_edp_2_i3"><text>-</text></inputEntry>
+        <outputEntry id="rule_edp_2_o1"><text>false</text></outputEntry>
+      </rule>
+      <rule id="rule_edp_3">
+        <inputEntry id="rule_edp_3_i1"><text>-</text></inputEntry>
+        <inputEntry id="rule_edp_3_i2"><text>-</text></inputEntry>
+        <inputEntry id="rule_edp_3_i3"><text>not([13..17])</text></inputEntry>
+        <outputEntry id="rule_edp_3_o1"><text>false</text></outputEntry>
+      </rule>
+      <rule id="rule_edp_4">
+        <inputEntry id="rule_edp_4_i1"><text>true</text></inputEntry>
+        <inputEntry id="rule_edp_4_i2"><text>true</text></inputEntry>
+        <inputEntry id="rule_edp_4_i3"><text>[13..17]</text></inputEntry>
+        <outputEntry id="rule_edp_4_o1"><text>true</text></outputEntry>
+      </rule>
+      <rule id="rule_edp_5">
+        <inputEntry id="rule_edp_5_i1"><text>-</text></inputEntry>
+        <inputEntry id="rule_edp_5_i2"><text>-</text></inputEntry>
+        <inputEntry id="rule_edp_5_i3"><text>-</text></inputEntry>
+        <outputEntry id="rule_edp_5_o1"><text>false</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_EDPrescreen">
+      <dmndi:DMNShape id="DMNShape_Decision" dmnElementRef="Decision_EDPrescreen">
+        <dc:Bounds x="400" y="80" width="180" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_in1" dmnElementRef="ID_standingOrder">
+        <dc:Bounds x="120" y="280" width="180" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_in2" dmnElementRef="ID_highRisk">
+        <dc:Bounds x="400" y="280" width="180" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_in3" dmnElementRef="ID_age">
+        <dc:Bounds x="680" y="280" width="180" height="60" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_ir1" dmnElementRef="ir_edp_1">
+        <di:waypoint x="210" y="280" /><di:waypoint x="460" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_ir2" dmnElementRef="ir_edp_2">
+        <di:waypoint x="490" y="280" /><di:waypoint x="490" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_ir3" dmnElementRef="ir_edp_3">
+        <di:waypoint x="770" y="280" /><di:waypoint x="520" y="160" />
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
