@@ -31,7 +31,8 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 │       ├── ed-prescreen.dmn              Should the patient be screened?
 │       ├── greenbaum.dmn                 At risk? (>= 2 of six items)
 │       └── alarm-signs.dmn               Count + suspicious-findings threshold
-└── prototype/                           Runnable FastAPI service + web UI
+├── prototype/                           Runnable FastAPI service + web UI (mock)
+└── service/                             Kogito / Quarkus service — runs the real models
 ```
 
 ## The models
@@ -54,7 +55,7 @@ Then open **http://localhost:8000** (API docs at `/docs`). You can also open `pr
 
 ## Roadmap
 
-The models and prototype are ready; the next step is a Kogito/Quarkus service (Helm chart + `src/main/resources` holding these BPMN/DMN files) so the real engine executes them, backed by a HAPI FHIR server, deployed to Kubernetes.
+The [`service/`](service/) module scaffolds the Kogito/Quarkus app that executes these BPMN/DMN files on the real engine (Kubernetes-ready via `quarkus-kubernetes`). Remaining work: harden the models for a clean Kogito build (see [`service/README.md`](service/README.md)), add a typed data model, and back it with a HAPI FHIR server.
 
 ## License
 
