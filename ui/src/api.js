@@ -5,7 +5,7 @@
  * against http://localhost:8080/q/swagger-ui
  *
  *   POST /EDPrescreen          { standingOrder, highRiskChiefComplaint, ageInYears } -> { shouldScreen, ... }
- *   POST /GreenbaumScreen      { six items }                                          -> { atRisk, ... }
+ *   POST /GreenbaumScreen      { six items + optional screenVariant }                                          -> { atRisk, ... }
  *   POST /AlarmSigns           { seven signs }                                        -> { numberOfAlarmSigns, suspiciousFindings, ... }
  *   POST /Process_EDEncounter  { encounterId }                                        -> { id, referralStatus, atRisk, ... }
  *   GET  /Process_EDEncounter                                                          -> [ instances ]
@@ -54,7 +54,7 @@ export const PATIENTS = [
     chiefComplaint: 'Abdominal pain, dehydration; bruising noted',
     standingOrder: true, highRiskChiefComplaint: true,
     greenbaum: {
-      historyOfSignificantTrauma: true, historyOfRunningAway: false,
+      historyOfBrokenBonesOrCuts: false, historyOfKnockedUnconscious: true, historyOfRunningAway: false,
       historyOfAlcoholOrDrugAbuse: true, everInvolvedWithLawEnforcement: false,
       historyOfSTD: false, numberOfSexualPartners: 2
     },
@@ -69,7 +69,7 @@ export const PATIENTS = [
     chiefComplaint: 'Laceration to forearm',
     standingOrder: true, highRiskChiefComplaint: true,
     greenbaum: {
-      historyOfSignificantTrauma: true, historyOfRunningAway: false,
+      historyOfBrokenBonesOrCuts: false, historyOfKnockedUnconscious: true, historyOfRunningAway: false,
       historyOfAlcoholOrDrugAbuse: false, everInvolvedWithLawEnforcement: false,
       historyOfSTD: false, numberOfSexualPartners: 0
     },
@@ -84,7 +84,7 @@ export const PATIENTS = [
     chiefComplaint: 'Ankle sprain',
     standingOrder: true, highRiskChiefComplaint: true,
     greenbaum: {
-      historyOfSignificantTrauma: false, historyOfRunningAway: false,
+      historyOfBrokenBonesOrCuts: false, historyOfKnockedUnconscious: false, historyOfRunningAway: false,
       historyOfAlcoholOrDrugAbuse: false, everInvolvedWithLawEnforcement: false,
       historyOfSTD: false, numberOfSexualPartners: 0
     },
@@ -97,7 +97,8 @@ export const PATIENTS = [
 ]
 
 export const GREENBAUM_LABELS = {
-  historyOfSignificantTrauma: 'History of significant trauma',
+  historyOfBrokenBonesOrCuts: 'Broken bones or cuts needing stitches (not scored \u2014 modified tool)',
+  historyOfKnockedUnconscious: 'Ever knocked unconscious',
   historyOfRunningAway: 'History of running away from home',
   historyOfAlcoholOrDrugAbuse: 'History of alcohol or drug use',
   everInvolvedWithLawEnforcement: 'Involvement with law enforcement',

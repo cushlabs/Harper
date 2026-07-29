@@ -42,7 +42,15 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 - **`ed-trafficking-detection.bpmn`** documents the same pathway as a five-pool collaboration. It is a design artifact and is deliberately **not** compiled: in BPMN each pool is a separate process, so a collaboration cannot yield a single end-to-end instance.
 - **Signals:** the Nurse's at-risk decision throws `Referral drafted` (which starts the Practitioner swimlane); the Practitioner's *Finalize* step throws `Suspect sex trafficking` (which starts the Social Worker).
 - **DMN:** *ED Prescreen* (decision table), *Greenbaum* (≥ 2 of six items), *Alarm Signs* (count + threshold). Business-rule tasks bind to these via Kogito's `implementation="http://www.jboss.org/drools/dmn"`.
-- **Screen performance.** At the ≥ 2 cutoff, the multi-site evaluation ([Greenbaum VJ et al., *J Adolesc Health* 2018](https://doi.org/10.1016/j.jadohealth.2018.06.032); n = 810 across 16 sites) reported **83.3% sensitivity and 49.4% specificity in emergency departments** (84.4% / 57.5% across the total sample; NPV 95.1% / 96.7%). The original single-site study reported 92.3% / 74.4% — better than the multi-site result, and not what an ED should plan around. Specificity near 50% means a high false-positive rate: roughly a third of non-victims screen positive. Size the downstream social-work path for that.
+- **Screen variants.** The significant-trauma item is answered by two subquestions — *1a* broken bones or cuts needing stitches, *1b* knocked unconscious. The **original** screen counts a yes to either as one positive. The multi-site evaluation also tested a **modified** tool that drops 1a and scores trauma on 1b alone. **Harper defaults to modified**; send `screenVariant: "original"` to score the unmodified screen. `1a` is still collected and stored either way, so switching variants needs no re-collection.
+- **Screen performance.** At the ≥ 2 cutoff, per the multi-site evaluation ([Greenbaum VJ et al., *J Adolesc Health* 2018](https://doi.org/10.1016/j.jadohealth.2018.06.032); n = 810 across 16 sites, ED subgroup n = 91):
+
+  | Variant | ED sensitivity | ED specificity | Total-sample sensitivity | Total-sample specificity |
+  |---|---|---|---|---|
+  | **Modified** (Harper default) | 83.3% | **59.5%** | 84.4% | 64.6% |
+  | Original | 83.3% | 49.4% | 84.4% | 57.5% |
+
+  Dropping 1a buys roughly 10 points of ED specificity at no cost to sensitivity — which is why it is the default. The original single-site study reported 92.3% / 74.4%, better than either multi-site result; do not plan around it. Even at 59.5%, about 40% of non-victims screen positive, so **size the downstream social-work path for a high false-positive rate.**
 - Open the models in any BPMN/DMN tool — Kogito, bpmn.io, Camunda Modeler, or Trisotech.
 
 ## Run it

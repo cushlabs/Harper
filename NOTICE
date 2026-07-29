@@ -52,9 +52,15 @@ Adopter obligations:
     not treat this repository as authority that you may use the instrument.
 
   * THE DERIVATIVE-WORKS QUESTION IS OPEN. Project Harper encodes the items
-    in DMN with reworded labels and an explicit partner-count threshold.
-    Whether that encoding constitutes a permitted reproduction or a
-    derivative work has NOT been reviewed by legal counsel.
+    in DMN with reworded labels and an explicit partner-count threshold, and
+    defaults to the MODIFIED scoring variant (trauma scored on subquestion 1b
+    alone, dropping 1a). That variant is not Harper's invention: it is the
+    modified tool the instrument's own authors evaluated and reported in
+    Table 5 of the 2018 multi-site study. Harper implements a published
+    variant rather than an ad hoc alteration. Even so, whether any of this
+    constitutes a permitted reproduction or a derivative work has NOT been
+    reviewed by legal counsel, and shipping a modified scoring default is
+    squarely the kind of question to put to the rights holder.
 
   * RETAIN ATTRIBUTION. Keep the citation above in any redistribution.
 

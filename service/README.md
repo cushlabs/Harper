@@ -36,8 +36,27 @@ Example (shape will match the generated OpenAPI):
 # Evaluate the Greenbaum decision
 curl -X POST http://localhost:8080/<greenbaum-endpoint> \
   -H 'Content-Type: application/json' \
-  -d '{ "historyOfSignificantTrauma": true, "historyOfAlcoholOrDrugAbuse": true, "numberOfSexualPartners": 2 }'
+  -d '{ "historyOfKnockedUnconscious": true, "historyOfAlcoholOrDrugAbuse": true, "numberOfSexualPartners": 2 }'
 ```
+
+### Greenbaum screen variants
+
+The significant-trauma item is answered by two subquestions: **1a** broken bones or cuts needing
+stitches, and **1b** knocked unconscious. The original screen counts a yes to either as one
+positive. The multi-site evaluation also tested a **modified** tool that drops 1a and scores
+trauma on 1b alone.
+
+Harper defaults to **modified** — it buys roughly 10 points of ED specificity at no cost to
+sensitivity. Send `screenVariant` to choose:
+
+| `screenVariant` | Trauma item scores on | ED sensitivity | ED specificity |
+|---|---|---|---|
+| *(omitted)* / `"modified"` | 1b only | 83.3% | **59.5%** |
+| `"original"` | 1a or 1b | 83.3% | 49.4% |
+
+Figures from Greenbaum VJ et al., *J Adolesc Health* 2018 (n = 810, 16 sites); ED subgroup n = 91.
+`historyOfBrokenBonesOrCuts` is still accepted and stored under the modified tool — it just does
+not score — so switching variants does not require re-collecting data.
 
 ## Build & package
 

@@ -75,14 +75,16 @@
       <bpmn:outgoing>nf5</bpmn:outgoing>
     </bpmn:manualTask>
     <bpmn:businessRuleTask id="BusinessRuleTask_Greenbaum" name="Screening Tool of Greenbaum" implementation="http://www.jboss.org/drools/dmn">
-      <bpmn:documentation>Kogito DMN call. namespace=http://harper.health/dmn/greenbaum, model=&#x27;Screening Tool of Greenbaum&#x27;, decision=&#x27;Screening Tool of Greenbaum&#x27;. Positive when &gt;= 2 of six. Output: atRisk.</bpmn:documentation>
+      <bpmn:documentation>Kogito DMN call. namespace=http://harper.health/dmn/greenbaum, model=&#x27;Screening Tool of Greenbaum&#x27;, decision=&#x27;Screening Tool of Greenbaum&#x27;. Positive when &gt;= 2 of six. Output: atRisk. Uses the MODIFIED variant (screenVariant=modified): trauma is scored on subquestion 1b (knocked unconscious) alone, dropping 1a (broken bones/cuts needing stitches), which raises ED specificity ~49.4% -&gt; ~59.5% at unchanged sensitivity.</bpmn:documentation>
       <bpmn:incoming>nf5</bpmn:incoming>
       <bpmn:outgoing>nf6</bpmn:outgoing>
       <bpmn:ioSpecification>
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_namespace" name="namespace" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_model" name="model" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_decision" name="decision" />
-        <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_historyOfSignificantTrauma" name="historyOfSignificantTrauma" />
+        <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_historyOfBrokenBonesOrCuts" name="historyOfBrokenBonesOrCuts" />
+        <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_historyOfKnockedUnconscious" name="historyOfKnockedUnconscious" />
+        <bpmn:dataInput id="BusinessRuleTask_Greenbaum_screenVariant" name="screenVariant" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_historyOfRunningAway" name="historyOfRunningAway" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_historyOfAlcoholOrDrugAbuse" name="historyOfAlcoholOrDrugAbuse" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_everInvolvedWithLawEnforcement" name="everInvolvedWithLawEnforcement" />
@@ -93,7 +95,9 @@
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_namespace</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_model</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_decision</bpmn:dataInputRefs>
-          <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_historyOfSignificantTrauma</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_historyOfBrokenBonesOrCuts</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_historyOfKnockedUnconscious</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_screenVariant</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_historyOfRunningAway</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_historyOfAlcoholOrDrugAbuse</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_everInvolvedWithLawEnforcement</bpmn:dataInputRefs>
@@ -115,8 +119,16 @@
         <bpmn:assignment><bpmn:from>atRisk</bpmn:from><bpmn:to>BusinessRuleTask_Greenbaum_decision</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="na5">
-        <bpmn:sourceRef>Data_Trauma</bpmn:sourceRef>
-        <bpmn:targetRef>BusinessRuleTask_Greenbaum_di_historyOfSignificantTrauma</bpmn:targetRef>
+        <bpmn:sourceRef>Data_BrokenBones</bpmn:sourceRef>
+        <bpmn:targetRef>BusinessRuleTask_Greenbaum_di_historyOfBrokenBonesOrCuts</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="na5b">
+        <bpmn:sourceRef>Data_KnockedOut</bpmn:sourceRef>
+        <bpmn:targetRef>BusinessRuleTask_Greenbaum_di_historyOfKnockedUnconscious</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="BusinessRuleTask_Greenbaum_a_variant">
+        <bpmn:targetRef>BusinessRuleTask_Greenbaum_screenVariant</bpmn:targetRef>
+        <bpmn:assignment><bpmn:from>modified</bpmn:from><bpmn:to>BusinessRuleTask_Greenbaum_screenVariant</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="na6">
         <bpmn:sourceRef>Data_RunAway</bpmn:sourceRef>
@@ -172,8 +184,10 @@
     <bpmn:dataObject id="Obj_Data_AgeYears" />
     <bpmn:dataObjectReference id="Data_ShouldScreen" name="Should the patient be screened?" dataObjectRef="Obj_Data_ShouldScreen" />
     <bpmn:dataObject id="Obj_Data_ShouldScreen" />
-    <bpmn:dataObjectReference id="Data_Trauma" name="History of significant trauma?" dataObjectRef="Obj_Data_Trauma" />
-    <bpmn:dataObject id="Obj_Data_Trauma" />
+    <bpmn:dataObjectReference id="Data_BrokenBones" name="Broken bones or cuts needing stitches? (subquestion 1a - not scored under the modified tool)" dataObjectRef="Obj_Data_BrokenBones" />
+    <bpmn:dataObject id="Obj_Data_BrokenBones" />
+    <bpmn:dataObjectReference id="Data_KnockedOut" name="Ever knocked unconscious? (subquestion 1b)" dataObjectRef="Obj_Data_KnockedOut" />
+    <bpmn:dataObject id="Obj_Data_KnockedOut" />
     <bpmn:dataObjectReference id="Data_RunAway" name="History of running away from home?" dataObjectRef="Obj_Data_RunAway" />
     <bpmn:dataObject id="Obj_Data_RunAway" />
     <bpmn:dataObjectReference id="Data_AlcoholDrug" name="History of alcohol or drug abuse?" dataObjectRef="Obj_Data_AlcoholDrug" />
@@ -249,8 +263,11 @@
       <bpmndi:BPMNShape id="Shape_Data_ShouldScreen" bpmnElement="Data_ShouldScreen">
         <dc:Bounds x="470" y="340" width="36" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Data_Trauma" bpmnElement="Data_Trauma">
+      <bpmndi:BPMNShape id="Shape_Data_BrokenBones" bpmnElement="Data_BrokenBones">
         <dc:Bounds x="820" y="255" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Data_KnockedOut" bpmnElement="Data_KnockedOut">
+        <dc:Bounds x="830" y="325" width="36" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Data_RunAway" bpmnElement="Data_RunAway">
         <dc:Bounds x="820" y="335" width="36" height="50" />
