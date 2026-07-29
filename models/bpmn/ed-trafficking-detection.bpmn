@@ -32,6 +32,7 @@
     <bpmn:messageFlow id="MF_ReadyForIntake" name="Ready for Intake" sourceRef="EndEvent_ReadyForIntake" targetRef="StartEvent_ReadyForIntake" />
   </bpmn:collaboration>
 
+  <bpmn:message id="Message_ReadyForIntake" name="ReadyForIntake" />
   <bpmn:signal id="Signal_SuspectTrafficking" name="Suspect sex trafficking" />
   <bpmn:signal id="Signal_ReferralDrafted" name="Referral drafted" />
 
@@ -47,7 +48,7 @@
     </bpmn:callActivity>
     <bpmn:endEvent id="EndEvent_ReadyForIntake" name="Ready for Intake">
       <bpmn:incoming>Flow_Reg_2</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MED_Reg_out" />
+      <bpmn:messageEventDefinition id="MED_Reg_out" messageRef="Message_ReadyForIntake" />
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_Reg_1" sourceRef="StartEvent_PatientArrives" targetRef="CallActivity_Registrar" />
     <bpmn:sequenceFlow id="Flow_Reg_2" sourceRef="CallActivity_Registrar" targetRef="EndEvent_ReadyForIntake" />
@@ -57,7 +58,7 @@
   <bpmn:process id="Process_Nurse" name="Nurse" isExecutable="false">
     <bpmn:startEvent id="StartEvent_ReadyForIntake" name="Ready for Intake">
       <bpmn:outgoing>Flow_Nurse_1</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MED_Nurse_in" />
+      <bpmn:messageEventDefinition id="MED_Nurse_in" messageRef="Message_ReadyForIntake" />
     </bpmn:startEvent>
     <bpmn:callActivity id="CallActivity_Nurse" name="Nurse" calledElement="Process_Nurse_Sub">
       <bpmn:documentation>Invokes the Nurse sub-process (Process_Nurse_Sub). Raises a DRAFT social-work referral on a positive risk determination; does not route (throws no routing signal).</bpmn:documentation>

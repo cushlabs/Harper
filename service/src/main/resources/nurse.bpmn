@@ -63,7 +63,7 @@
         <bpmn:targetRef>Prop_shouldScreen</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
     </bpmn:businessRuleTask>
-    <bpmn:exclusiveGateway id="Gateway_Screen" name="Screen?" default="nf10">
+    <bpmn:exclusiveGateway id="Gateway_Screen" name="Screen?" gatewayDirection="Diverging" default="nf10">
       <bpmn:incoming>nf3</bpmn:incoming>
       <bpmn:outgoing>nf4</bpmn:outgoing>
       <bpmn:outgoing>nf10</bpmn:outgoing>
@@ -141,7 +141,7 @@
         <bpmn:targetRef>Prop_atRisk</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
     </bpmn:businessRuleTask>
-    <bpmn:exclusiveGateway id="Gateway_AtRisk" name="At risk?" default="nf9">
+    <bpmn:exclusiveGateway id="Gateway_AtRisk" name="At risk?" gatewayDirection="Diverging" default="nf9">
       <bpmn:incoming>nf6</bpmn:incoming>
       <bpmn:outgoing>nf7</bpmn:outgoing>
       <bpmn:outgoing>nf9</bpmn:outgoing>

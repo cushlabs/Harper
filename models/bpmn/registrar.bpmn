@@ -7,6 +7,8 @@
                   targetNamespace="http://harper.health/bpmn/registrar"
                   exporter="Project Harper (reconstructed from diagram)" exporterVersion="0.1">
 
+  <bpmn:message id="Message_RequestOutsideRecords" name="RequestOutsideRecords" />
+  <bpmn:message id="Message_ReceiveOutsideRecords" name="ReceiveOutsideRecords" />
   <bpmn:process id="Process_Registrar_Sub" name="Registrar (sub-process)" isExecutable="false">
     <bpmn:documentation>Expanded "Registrar" sub-process from the top-level ED trafficking-detection collaboration. The Request/Receive Outside Records message events correspond to the top-level message flows with the Outside Medical Records pool.</bpmn:documentation>
 
@@ -37,13 +39,13 @@
     <bpmn:intermediateThrowEvent id="IntermediateThrow_RequestRecords" name="Request Outside Records">
       <bpmn:incoming>Flow_5</bpmn:incoming>
       <bpmn:outgoing>Flow_6</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MED_Request" />
+      <bpmn:messageEventDefinition id="MED_Request" messageRef="Message_RequestOutsideRecords" />
     </bpmn:intermediateThrowEvent>
 
     <bpmn:intermediateCatchEvent id="IntermediateCatch_ReceiveRecords" name="Receive Outside Records">
       <bpmn:incoming>Flow_6</bpmn:incoming>
       <bpmn:outgoing>Flow_7</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MED_Receive" />
+      <bpmn:messageEventDefinition id="MED_Receive" messageRef="Message_ReceiveOutsideRecords" />
     </bpmn:intermediateCatchEvent>
 
     <bpmn:task id="Task_OutsideRecordsToEHR" name="Outside records to EHR">

@@ -95,7 +95,7 @@
       <bpmn:incoming>lf4</bpmn:incoming>
       <bpmn:outgoing>lf5</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:exclusiveGateway id="Gateway_SuspiciousFindings" name="Refer to social work?" default="lf8">
+    <bpmn:exclusiveGateway id="Gateway_SuspiciousFindings" name="Refer to social work?" gatewayDirection="Diverging" default="lf8">
       <bpmn:incoming>lf5</bpmn:incoming>
       <bpmn:outgoing>lf6</bpmn:outgoing>
       <bpmn:outgoing>lf8</bpmn:outgoing>
