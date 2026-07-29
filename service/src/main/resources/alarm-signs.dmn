@@ -6,30 +6,37 @@
              id="Definitions_AlarmSigns" name="AlarmSigns"
              namespace="http://harper.health/dmn/alarm-signs">
 
-  <inputData id="ID_phys" name="Signs of physical abuse">
+  <inputData id="ID_phys" name="signsOfPhysicalAbuse">
+    <description>Signs of physical abuse</description>
     <variable id="var_phys" name="signsOfPhysicalAbuse" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_drug" name="Signs of drug abuse">
+  <inputData id="ID_drug" name="signsOfDrugAbuse">
+    <description>Signs of drug abuse</description>
     <variable id="var_drug" name="signsOfDrugAbuse" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_anog" name="Signs of anogenital trauma">
+  <inputData id="ID_anog" name="signsOfAnogenitalTrauma">
+    <description>Signs of anogenital trauma</description>
     <variable id="var_anog" name="signsOfAnogenitalTrauma" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_ven" name="Signs of venereal disease">
+  <inputData id="ID_ven" name="signsOfVenerealDisease">
+    <description>Signs of venereal disease</description>
     <variable id="var_ven" name="signsOfVenerealDisease" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_evid" name="Evidence of abuse in outside records">
+  <inputData id="ID_evid" name="evidenceOfAbuseInOutsideRecords">
+    <description>Evidence of abuse in outside records</description>
     <variable id="var_evid" name="evidenceOfAbuseInOutsideRecords" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_accsusp" name="Suspicious behavior in accompanying adult">
+  <inputData id="ID_accsusp" name="suspiciousBehaviorInAccompanyingAdult">
+    <description>Suspicious behavior in accompanying adult</description>
     <variable id="var_accsusp" name="suspiciousBehaviorInAccompanyingAdult" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_patsusp" name="Suspicious behavior of patient">
+  <inputData id="ID_patsusp" name="suspiciousBehaviorOfPatient">
+    <description>Suspicious behavior of patient</description>
     <variable id="var_patsusp" name="suspiciousBehaviorOfPatient" typeRef="boolean" />
   </inputData>
 
-  <decision id="Decision_NumAlarmSigns" name="Number of alarm signs">
-    <description>Counts the number of positive human-trafficking alarm signs recorded during the examination.</description>
+  <decision id="Decision_NumAlarmSigns" name="numberOfAlarmSigns">
+    <description>Number of alarm signs. Counts the number of positive human-trafficking alarm signs recorded during the examination.</description>
     <variable id="var_numAlarm" name="numberOfAlarmSigns" typeRef="number" />
     <informationRequirement id="ir_as_1"><requiredInput href="#ID_phys" /></informationRequirement>
     <informationRequirement id="ir_as_2"><requiredInput href="#ID_drug" /></informationRequirement>
@@ -49,8 +56,8 @@
     </literalExpression>
   </decision>
 
-  <decision id="Decision_SuspFindings" name="Suspicious findings for human trafficking?">
-    <description>True when the number of alarm signs meets or exceeds the configured threshold (default 2). Threshold is a placeholder to be confirmed with clinical governance.</description>
+  <decision id="Decision_SuspFindings" name="suspiciousFindings">
+    <description>Suspicious findings for human trafficking?. True when the number of alarm signs meets or exceeds the configured threshold (default 2). Threshold is a placeholder to be confirmed with clinical governance.</description>
     <variable id="var_suspFindings" name="suspiciousFindings" typeRef="boolean" />
     <informationRequirement id="ir_susp_1"><requiredDecision href="#Decision_NumAlarmSigns" /></informationRequirement>
     <literalExpression id="le_suspFindings">

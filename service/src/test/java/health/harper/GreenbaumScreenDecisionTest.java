@@ -14,14 +14,14 @@ import static org.hamcrest.CoreMatchers.is;
 class GreenbaumScreenDecisionTest {
 
     private static final String CT = "application/json";
-    private static final String DECISION = "'Screening Tool of Greenbaum'";
+    private static final String DECISION = "atRisk";
 
     @Test
     void twoOrMorePositive_isAtRisk() {
         given().contentType(CT)
-            .body("{\"History of significant trauma?\": true, \"History of running away from home?\": false, " +
-                  "\"History of alcohol or drug abuse?\": true, \"Ever involved with law enforcement?\": false, " +
-                  "\"History of sexually transmitted disease?\": false, \"Number of sexual partners\": 2}")
+            .body("{\"historyOfSignificantTrauma\": true, \"historyOfRunningAway\": false, " +
+                  "\"historyOfAlcoholOrDrugAbuse\": true, \"everInvolvedWithLawEnforcement\": false, " +
+                  "\"historyOfSTD\": false, \"numberOfSexualPartners\": 2}")
         .when().post("/GreenbaumScreen")
         .then().statusCode(200)
             .body(DECISION, is(true));
@@ -30,9 +30,9 @@ class GreenbaumScreenDecisionTest {
     @Test
     void singlePositive_isNotAtRisk() {
         given().contentType(CT)
-            .body("{\"History of significant trauma?\": true, \"History of running away from home?\": false, " +
-                  "\"History of alcohol or drug abuse?\": false, \"Ever involved with law enforcement?\": false, " +
-                  "\"History of sexually transmitted disease?\": false, \"Number of sexual partners\": 0}")
+            .body("{\"historyOfSignificantTrauma\": true, \"historyOfRunningAway\": false, " +
+                  "\"historyOfAlcoholOrDrugAbuse\": false, \"everInvolvedWithLawEnforcement\": false, " +
+                  "\"historyOfSTD\": false, \"numberOfSexualPartners\": 0}")
         .when().post("/GreenbaumScreen")
         .then().statusCode(200)
             .body(DECISION, is(false));
@@ -41,9 +41,9 @@ class GreenbaumScreenDecisionTest {
     @Test
     void moreThanFivePartnersPlusOneItem_isAtRisk() {
         given().contentType(CT)
-            .body("{\"History of significant trauma?\": true, \"History of running away from home?\": false, " +
-                  "\"History of alcohol or drug abuse?\": false, \"Ever involved with law enforcement?\": false, " +
-                  "\"History of sexually transmitted disease?\": false, \"Number of sexual partners\": 6}")
+            .body("{\"historyOfSignificantTrauma\": true, \"historyOfRunningAway\": false, " +
+                  "\"historyOfAlcoholOrDrugAbuse\": false, \"everInvolvedWithLawEnforcement\": false, " +
+                  "\"historyOfSTD\": false, \"numberOfSexualPartners\": 6}")
         .when().post("/GreenbaumScreen")
         .then().statusCode(200)
             .body(DECISION, is(true));

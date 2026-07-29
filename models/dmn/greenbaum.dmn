@@ -6,27 +6,33 @@
              id="Definitions_Greenbaum" name="GreenbaumScreen"
              namespace="http://harper.health/dmn/greenbaum">
 
-  <inputData id="ID_trauma" name="History of significant trauma?">
+  <inputData id="ID_trauma" name="historyOfSignificantTrauma">
+    <description>History of significant trauma?</description>
     <variable id="var_trauma" name="historyOfSignificantTrauma" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_runaway" name="History of running away from home?">
+  <inputData id="ID_runaway" name="historyOfRunningAway">
+    <description>History of running away from home?</description>
     <variable id="var_runaway" name="historyOfRunningAway" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_alcohol" name="History of alcohol or drug abuse?">
+  <inputData id="ID_alcohol" name="historyOfAlcoholOrDrugAbuse">
+    <description>History of alcohol or drug abuse?</description>
     <variable id="var_alcohol" name="historyOfAlcoholOrDrugAbuse" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_law" name="Ever involved with law enforcement?">
+  <inputData id="ID_law" name="everInvolvedWithLawEnforcement">
+    <description>Ever involved with law enforcement?</description>
     <variable id="var_law" name="everInvolvedWithLawEnforcement" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_std" name="History of sexually transmitted disease?">
+  <inputData id="ID_std" name="historyOfSTD">
+    <description>History of sexually transmitted disease?</description>
     <variable id="var_std" name="historyOfSTD" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_partners" name="Number of sexual partners">
+  <inputData id="ID_partners" name="numberOfSexualPartners">
+    <description>Number of sexual partners</description>
     <variable id="var_partners" name="numberOfSexualPartners" typeRef="number" />
   </inputData>
 
-  <decision id="Decision_Greenbaum" name="Screening Tool of Greenbaum">
-    <description>Validated Short Screen for Child Sex Trafficking (Greenbaum). Positive ("At risk?") when two or more of the six items are positive; the partner item counts positive when the number of partners exceeds five. Validated cutoff >= 2 (sensitivity 92%, specificity 73%, NPV 97%).</description>
+  <decision id="Decision_Greenbaum" name="atRisk">
+    <description>Screening Tool of Greenbaum. Validated Short Screen for Child Sex Trafficking (Greenbaum). Positive ("At risk?") when two or more of the six items are positive; the partner item counts positive when the number of partners exceeds five. Validated cutoff >= 2 (sensitivity 92%, specificity 73%, NPV 97%).</description>
     <variable id="var_atRisk" name="atRisk" typeRef="boolean" />
     <informationRequirement id="ir_gb_1"><requiredInput href="#ID_trauma" /></informationRequirement>
     <informationRequirement id="ir_gb_2"><requiredInput href="#ID_runaway" /></informationRequirement>

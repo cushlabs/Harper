@@ -18,26 +18,26 @@ class AlarmSignsDecisionTest {
     @Test
     void twoSigns_areSuspicious() {
         given().contentType(CT)
-            .body("{\"Signs of physical abuse\": true, \"Signs of drug abuse\": true, " +
-                  "\"Signs of anogenital trauma\": false, \"Signs of venereal disease\": false, " +
-                  "\"Evidence of abuse in outside records\": false, \"Suspicious behavior in accompanying adult\": false, " +
-                  "\"Suspicious behavior of patient\": false}")
+            .body("{\"signsOfPhysicalAbuse\": true, \"signsOfDrugAbuse\": true, " +
+                  "\"signsOfAnogenitalTrauma\": false, \"signsOfVenerealDisease\": false, " +
+                  "\"evidenceOfAbuseInOutsideRecords\": false, \"suspiciousBehaviorInAccompanyingAdult\": false, " +
+                  "\"suspiciousBehaviorOfPatient\": false}")
         .when().post("/AlarmSigns")
         .then().statusCode(200)
-            .body("'Number of alarm signs'", is(2))
-            .body("'Suspicious findings for human trafficking?'", is(true));
+            .body("numberOfAlarmSigns", is(2))
+            .body("suspiciousFindings", is(true));
     }
 
     @Test
     void oneSign_isNotSuspicious() {
         given().contentType(CT)
-            .body("{\"Signs of physical abuse\": true, \"Signs of drug abuse\": false, " +
-                  "\"Signs of anogenital trauma\": false, \"Signs of venereal disease\": false, " +
-                  "\"Evidence of abuse in outside records\": false, \"Suspicious behavior in accompanying adult\": false, " +
-                  "\"Suspicious behavior of patient\": false}")
+            .body("{\"signsOfPhysicalAbuse\": true, \"signsOfDrugAbuse\": false, " +
+                  "\"signsOfAnogenitalTrauma\": false, \"signsOfVenerealDisease\": false, " +
+                  "\"evidenceOfAbuseInOutsideRecords\": false, \"suspiciousBehaviorInAccompanyingAdult\": false, " +
+                  "\"suspiciousBehaviorOfPatient\": false}")
         .when().post("/AlarmSigns")
         .then().statusCode(200)
-            .body("'Number of alarm signs'", is(1))
-            .body("'Suspicious findings for human trafficking?'", is(false));
+            .body("numberOfAlarmSigns", is(1))
+            .body("suspiciousFindings", is(false));
     }
 }

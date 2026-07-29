@@ -46,7 +46,7 @@
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="BusinessRuleTask_EDPrescreen_a_decision">
         <bpmn:targetRef>BusinessRuleTask_EDPrescreen_decision</bpmn:targetRef>
-        <bpmn:assignment><bpmn:from>ED Prescreen</bpmn:from><bpmn:to>BusinessRuleTask_EDPrescreen_decision</bpmn:to></bpmn:assignment>
+        <bpmn:assignment><bpmn:from>shouldScreen</bpmn:from><bpmn:to>BusinessRuleTask_EDPrescreen_decision</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="na1">
         <bpmn:sourceRef>Data_StandingOrder</bpmn:sourceRef>
@@ -112,7 +112,7 @@
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="BusinessRuleTask_Greenbaum_a_decision">
         <bpmn:targetRef>BusinessRuleTask_Greenbaum_decision</bpmn:targetRef>
-        <bpmn:assignment><bpmn:from>Screening Tool of Greenbaum</bpmn:from><bpmn:to>BusinessRuleTask_Greenbaum_decision</bpmn:to></bpmn:assignment>
+        <bpmn:assignment><bpmn:from>atRisk</bpmn:from><bpmn:to>BusinessRuleTask_Greenbaum_decision</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="na5">
         <bpmn:sourceRef>Data_Trauma</bpmn:sourceRef>

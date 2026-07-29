@@ -52,7 +52,7 @@
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="BusinessRuleTask_AlarmSigns_a_decision">
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_decision</bpmn:targetRef>
-        <bpmn:assignment><bpmn:from>Suspicious findings for human trafficking?</bpmn:from><bpmn:to>BusinessRuleTask_AlarmSigns_decision</bpmn:to></bpmn:assignment>
+        <bpmn:assignment><bpmn:from>suspiciousFindings</bpmn:from><bpmn:to>BusinessRuleTask_AlarmSigns_decision</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="la1">
         <bpmn:sourceRef>Data_PhysicalAbuse</bpmn:sourceRef>

@@ -6,18 +6,21 @@
              id="Definitions_EDPrescreen" name="EDPrescreen"
              namespace="http://harper.health/dmn/ed-prescreen">
 
-  <inputData id="ID_standingOrder" name="Standing order for survey administration?">
+  <inputData id="ID_standingOrder" name="standingOrder">
+    <description>Standing order for survey administration?</description>
     <variable id="var_standingOrder" name="standingOrder" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_highRisk" name="High risk chief complaint?">
+  <inputData id="ID_highRisk" name="highRiskChiefComplaint">
+    <description>High risk chief complaint?</description>
     <variable id="var_highRisk" name="highRiskChiefComplaint" typeRef="boolean" />
   </inputData>
-  <inputData id="ID_age" name="Age in years">
+  <inputData id="ID_age" name="ageInYears">
+    <description>Age in years</description>
     <variable id="var_age" name="ageInYears" typeRef="number" />
   </inputData>
 
-  <decision id="Decision_EDPrescreen" name="ED Prescreen">
-    <description>Should the patient be screened? Prescreen gate for administering the Greenbaum screen. Screen when a standing order exists, the chief complaint is high-risk, and the patient is within the validated adolescent band (13-17). Thresholds are configurable.</description>
+  <decision id="Decision_EDPrescreen" name="shouldScreen">
+    <description>ED Prescreen. Should the patient be screened? Prescreen gate for administering the Greenbaum screen. Screen when a standing order exists, the chief complaint is high-risk, and the patient is within the validated adolescent band (13-17). Thresholds are configurable.</description>
     <variable id="var_shouldScreen" name="shouldScreen" typeRef="boolean" />
     <informationRequirement id="ir_edp_1"><requiredInput href="#ID_standingOrder" /></informationRequirement>
     <informationRequirement id="ir_edp_2"><requiredInput href="#ID_highRisk" /></informationRequirement>
