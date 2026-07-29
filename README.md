@@ -84,7 +84,6 @@ That paper is not open access, and **we have not established the instrument's re
 What this means if you intend to deploy Harper:
 
 - **Assume permission is required.** Obtain your own licensing determination from the rights holder before any clinical or commercial use. Do not treat this repository as authority that you may use the instrument.
-- **Do not assume a Creative Commons grant.** A separate implementation study — [Peterson LJ et al., *Child Abuse & Neglect* (2022)](https://www.sciencedirect.com/science/article/pii/S0145213422000254) — is published under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/). That license covers **that article**, not the underlying instrument, and Harper's encoding does not derive from it. It is cited here only to prevent the inference.
 - **The derivative-works question is open.** Harper encodes the items in DMN with reworded labels and an explicit partner-count threshold. Whether that is a permitted reproduction or a derivative work **has not been reviewed by counsel.**
 
 **Status: unresolved and under review.** Do not rely on this repository for a licensing determination. Nothing here is legal advice.
