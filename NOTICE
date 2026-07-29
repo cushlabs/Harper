@@ -5,25 +5,27 @@ This product includes software developed by Project Harper, licensed under
 the Apache License, Version 2.0 (see LICENSE).
 
 ================================================================================
-THIRD-PARTY CONTENT UNDER SEPARATE LICENSE
+THIRD-PARTY CLINICAL CONTENT - RIGHTS NOT ESTABLISHED
 ================================================================================
 
-Greenbaum Short Screen for Child Sex Trafficking (SSCST)
+Short Screen for Child Sex Trafficking (SSCST), "the Greenbaum screen"
 --------------------------------------------------------------------------------
-License:  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0
-          International (CC BY-NC-ND 4.0)
-          https://creativecommons.org/licenses/by-nc-nd/4.0/
 
-Attribution:
+Source of the content encoded in this repository:
+
   Greenbaum VJ, Dodd M, McCracken C. "A Short Screening Tool to Identify
   Victims of Child Sex Trafficking in the Health Care Setting."
   Pediatric Emergency Care. PMID 26599463.
   https://pubmed.ncbi.nlm.nih.gov/26599463/
 
+STATUS: The redistribution terms of this instrument have NOT been established.
+The source paper is not open access. Project Harper has not obtained, and does
+not claim, any license to this content.
+
 The six screening items, the >= 2 positive cutoff, and the associated
-validation characteristics of this instrument are clinical content owned by
-its authors. They are NOT covered by the Apache License 2.0 that governs the
-rest of this repository.
+validation characteristics are clinical content owned by their authors and/or
+publisher. They are NOT covered by the Apache License 2.0 that governs the
+rest of this repository. Apache 2.0 does not extend to them.
 
 This content appears in, or is referenced by, the following files:
 
@@ -35,21 +37,29 @@ This content appears in, or is referenced by, the following files:
 
 Adopter obligations:
 
-  * NonCommercial (NC) - The CC grant does not cover commercial use. Use of
-    this instrument by a for-profit health system, or in any commercial
-    product or service, may require separate permission from the rights
-    holder. Adopters are responsible for obtaining it.
+  * ASSUME PERMISSION IS REQUIRED. Obtain your own licensing determination
+    from the rights holder before any clinical or commercial deployment. Do
+    not treat this repository as authority that you may use the instrument.
 
-  * NoDerivatives (ND) - Distribution of adapted or modified versions of the
-    instrument is restricted. Project Harper encodes the items in DMN with
-    reworded labels and an explicit partner-count threshold. Whether this
-    encoding constitutes a permitted reproduction or a prohibited derivative
-    work has NOT been reviewed by legal counsel and remains an open question.
+  * DO NOT ASSUME A CREATIVE COMMONS GRANT. A separate implementation study -
+    Peterson LJ et al., "Implementation of a screening tool for child sex
+    trafficking among youth presenting to the emergency department - A
+    quality improvement initiative," Child Abuse & Neglect (2022),
+    https://www.sciencedirect.com/science/article/pii/S0145213422000254 - is
+    published under CC BY-NC-ND 4.0. That license covers THAT ARTICLE. It
+    does not govern the underlying instrument, and Project Harper's encoding
+    does not derive from that article. It is recorded here solely to prevent
+    the inference that a CC grant attaches to the instrument.
 
-  * Attribution (BY) - Retain the citation above in any redistribution.
+  * THE DERIVATIVE-WORKS QUESTION IS OPEN. Project Harper encodes the items
+    in DMN with reworded labels and an explicit partner-count threshold.
+    Whether that encoding constitutes a permitted reproduction or a
+    derivative work has NOT been reviewed by legal counsel.
 
-Project Harper does not grant, and cannot grant, any rights to this
-instrument. Nothing in this repository is legal advice.
+  * RETAIN ATTRIBUTION. Keep the citation above in any redistribution.
+
+This matter is unresolved and under review. Nothing in this repository is
+legal advice.
 
 ================================================================================
 

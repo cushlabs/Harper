@@ -73,19 +73,20 @@ This repository is **split-licensed**, and the distinction matters before you de
 
 Everything Project Harper authored — the BPMN processes, the Kogito/Quarkus service, the DMN model structure, the documentation, and the archived prototype — is licensed under the [Apache License 2.0](LICENSE). Free to use, modify, and redistribute, commercially or otherwise.
 
-### The Greenbaum screening instrument — CC BY-NC-ND 4.0
+### The Greenbaum screening instrument — terms not established
 
-The *clinical content* of the Greenbaum Short Screen for Child Sex Trafficking (SSCST) — the six screening items and the ≥ 2 cutoff encoded in [`models/dmn/greenbaum.dmn`](models/dmn/greenbaum.dmn) — originates with V. Jordan Greenbaum and colleagues and is made available under [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/).
-
-**Apache 2.0 does not extend to that content.** Two clauses constrain adopters:
-
-- **NonCommercial (NC).** Use of the instrument in a commercial setting — which may include deployment by a for-profit health system — falls outside the CC grant. Adopters are responsible for securing appropriate permission from the rights holder for their own use.
-- **NoDerivatives (ND).** Distribution of adapted or modified versions of the instrument is restricted. Harper encodes the items in DMN with reworded labels and an explicit partner-count threshold. **Whether that encoding is a permitted reproduction or a derivative work has not been reviewed by counsel.** Treat it as an open question.
-
-Project Harper does not grant, and cannot grant, any rights to the Greenbaum instrument. If you intend to run this in a commercial or clinical setting, obtain your own licensing determination first. Nothing in this repository is legal advice.
-
-### Attribution
+The *clinical content* encoded in [`models/dmn/greenbaum.dmn`](models/dmn/greenbaum.dmn) — the six screening items and the ≥ 2 cutoff — is **not Project Harper's to license.** It derives from the Short Screen for Child Sex Trafficking (SSCST):
 
 > Greenbaum VJ, Dodd M, McCracken C. *A Short Screening Tool to Identify Victims of Child Sex Trafficking in the Health Care Setting.* Pediatric Emergency Care. [PMID 26599463](https://pubmed.ncbi.nlm.nih.gov/26599463/)
+
+That paper is not open access, and **we have not established the instrument's redistribution terms.** Apache 2.0 does not extend to this content. Project Harper does not grant, and cannot grant, any rights to it.
+
+What this means if you intend to deploy Harper:
+
+- **Assume permission is required.** Obtain your own licensing determination from the rights holder before any clinical or commercial use. Do not treat this repository as authority that you may use the instrument.
+- **Do not assume a Creative Commons grant.** A separate implementation study — [Peterson LJ et al., *Child Abuse & Neglect* (2022)](https://www.sciencedirect.com/science/article/pii/S0145213422000254) — is published under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/). That license covers **that article**, not the underlying instrument, and Harper's encoding does not derive from it. It is cited here only to prevent the inference.
+- **The derivative-works question is open.** Harper encodes the items in DMN with reworded labels and an explicit partner-count threshold. Whether that is a permitted reproduction or a derivative work **has not been reviewed by counsel.**
+
+**Status: unresolved and under review.** Do not rely on this repository for a licensing determination. Nothing here is legal advice.
 
 See [NOTICE](NOTICE) for the full third-party attribution record.

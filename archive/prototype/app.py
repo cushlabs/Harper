@@ -7,9 +7,11 @@ FHIR R4 resources (QuestionnaireResponse, RiskAssessment, Flag, Task).
 
 This is a PROTOTYPE with synthetic data. Not for clinical use.
 
-LICENSING: the Greenbaum screening items and >= 2 cutoff implemented below are
-CC BY-NC-ND 4.0 content owned by their authors (PMID 26599463), NOT Apache 2.0.
-NonCommercial and NoDerivatives clauses apply. See NOTICE at the repo root.
+LICENSING: the screening items and >= 2 cutoff implemented below are clinical
+content from the SSCST (Greenbaum VJ et al., PMID 26599463), NOT Apache 2.0.
+Their redistribution terms have NOT been established and Project Harper claims
+no license to them. Assume permission is required. Do not assume a Creative
+Commons grant. See NOTICE at the repo root.
 
 Run:
     pip install -r requirements.txt
