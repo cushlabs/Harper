@@ -10,7 +10,7 @@
   <bpmn:itemDefinition id="ItemString" structureRef="java.lang.String" />
   <bpmn:message id="Message_RequestOutsideRecords" name="RequestOutsideRecords" itemRef="ItemString" />
   <bpmn:message id="Message_ReceiveOutsideRecords" name="ReceiveOutsideRecords" itemRef="ItemString" />
-  <bpmn:process id="Process_Registrar_Sub" name="Registrar (sub-process)" isExecutable="false">
+  <bpmn:process id="Process_Registrar_Sub" name="Registrar (sub-process)" isExecutable="true">
     <bpmn:documentation>Expanded "Registrar" sub-process from the top-level ED trafficking-detection collaboration. The Request/Receive Outside Records message events correspond to the top-level message flows with the Outside Medical Records pool.</bpmn:documentation>
     <bpmn:property id="Prop_outsideRecords" name="outsideRecords" itemSubjectRef="ItemString" />
 

@@ -22,11 +22,12 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 │   ├── use-case-specification.docx       Full use-case spec (v1.2)
 │   └── what-is-project-harper.docx        One-page overview
 ├── models/
-│   ├── bpmn/                             Executable BPMN 2.0 process models
-│   │   ├── ed-trafficking-detection.bpmn  Top-level collaboration (5 pools)
-│   │   ├── registrar.bpmn
-│   │   ├── nurse.bpmn
-│   │   └── practitioner.bpmn
+│   ├── bpmn/                             BPMN 2.0 process models
+│   │   ├── ed-encounter.bpmn              Orchestrator — one instance per ED encounter (executable)
+│   │   ├── registrar.bpmn                 } sub-processes invoked by the
+│   │   ├── nurse.bpmn                     } orchestrator (executable)
+│   │   ├── practitioner.bpmn              }
+│   │   └── ed-trafficking-detection.bpmn  5-pool collaboration — design artifact, not compiled
 │   └── dmn/                              DMN 1.3 decision models
 │       ├── ed-prescreen.dmn              Should the patient be screened?
 │       ├── greenbaum.dmn                 At risk? (>= 2 of six items)
@@ -37,7 +38,8 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 
 ## The models
 
-- The **top-level** BPMN orchestrates five pools; Registrar, Nurse, and Practitioner are call activities that invoke the sub-processes.
+- **`ed-encounter.bpmn` is the executable orchestrator**: one process instance per ED encounter, calling Registrar → Nurse → (when a draft referral is raised) Practitioner. That instance is the end-to-end reporting spine — status, stage timings, and outcome for a visit.
+- **`ed-trafficking-detection.bpmn`** documents the same pathway as a five-pool collaboration. It is a design artifact and is deliberately **not** compiled: in BPMN each pool is a separate process, so a collaboration cannot yield a single end-to-end instance.
 - **Signals:** the Nurse's at-risk decision throws `Referral drafted` (which starts the Practitioner swimlane); the Practitioner's *Finalize* step throws `Suspect sex trafficking` (which starts the Social Worker).
 - **DMN:** *ED Prescreen* (decision table), *Greenbaum* (≥ 2 of six items), *Alarm Signs* (count + threshold). Business-rule tasks bind to these via Kogito's `implementation="http://www.jboss.org/drools/dmn"`.
 - Open the models in any BPMN/DMN tool — Kogito, bpmn.io, Camunda Modeler, or Trisotech.

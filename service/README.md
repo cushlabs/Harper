@@ -22,7 +22,13 @@ mvn quarkus:dev
 - OpenAPI: http://localhost:8080/q/openapi
 - Health: http://localhost:8080/q/health
 
-Kogito generates one REST resource per **executable** process and one per **DMN model**. The executable processes today are the **Nurse** and **Practitioner** sub-processes; the three DMN decisions (ED Prescreen, Greenbaum, Alarm Signs) are exposed as decision endpoints. Browse the exact generated paths in Swagger UI once the app starts.
+Kogito generates one REST resource per **executable** process and one per **DMN model**:
+
+- **`Process_EDEncounter`** — the orchestrator. Start one instance per ED encounter; it calls Registrar → Nurse → (conditionally) Practitioner and is the end-to-end record for reporting. Use the process-management endpoints (and Kogito Data Index, if deployed) to query instances, stage timings, and outcomes.
+- **`Process_Registrar_Sub`, `Process_Nurse_Sub`, `Process_LIP_Sub`** — the sub-processes it invokes.
+- **`EDPrescreen`, `GreenbaumScreen`, `AlarmSigns`** — the DMN decision endpoints.
+
+The five-pool collaboration (`ed-trafficking-detection.bpmn`) is **not** compiled — see `sync-models.sh`. Browse the exact generated paths in Swagger UI once the app starts.
 
 Example (shape will match the generated OpenAPI):
 
