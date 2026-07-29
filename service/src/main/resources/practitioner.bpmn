@@ -91,10 +91,11 @@
       <bpmn:incoming>lf3</bpmn:incoming>
       <bpmn:outgoing>lf4</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:task id="Task_FindingsRecorded" name="Findings recorded in medical record">
+    <bpmn:scriptTask id="Task_FindingsRecorded" name="Findings recorded in medical record" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>lf4</bpmn:incoming>
       <bpmn:outgoing>lf5</bpmn:outgoing>
-    </bpmn:task>
+      <bpmn:script>System.out.println(&quot;Harper: Findings recorded in medical record&quot;);</bpmn:script>
+    </bpmn:scriptTask>
     <bpmn:exclusiveGateway id="Gateway_SuspiciousFindings" name="Refer to social work?" gatewayDirection="Diverging" default="lf8">
       <bpmn:incoming>lf5</bpmn:incoming>
       <bpmn:outgoing>lf6</bpmn:outgoing>
@@ -110,19 +111,26 @@
       <bpmn:outgoing>lf7</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SED_Throw_SuspectTrafficking_LIP" signalRef="Signal_SuspectTrafficking" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:task id="Task_Diagnosis" name="Diagnosis">
+    <bpmn:exclusiveGateway id="Gateway_MergeDiagnosis" name="" gatewayDirection="Converging">
       <bpmn:incoming>lf7</bpmn:incoming>
       <bpmn:incoming>lf8</bpmn:incoming>
+      <bpmn:outgoing>lf8b</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:scriptTask id="Task_Diagnosis" name="Diagnosis" scriptFormat="http://www.java.com/java">
+      <bpmn:incoming>lf8b</bpmn:incoming>
       <bpmn:outgoing>lf9</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="Task_ImmediateCare" name="Immediate care delivered">
+      <bpmn:script>System.out.println(&quot;Harper: Diagnosis&quot;);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Task_ImmediateCare" name="Immediate care delivered" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>lf9</bpmn:incoming>
       <bpmn:outgoing>lf10</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="Task_DischargePlanning" name="Discharge Planning">
+      <bpmn:script>System.out.println(&quot;Harper: Immediate care delivered&quot;);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Task_DischargePlanning" name="Discharge Planning" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>lf10</bpmn:incoming>
       <bpmn:outgoing>lf11</bpmn:outgoing>
-    </bpmn:task>
+      <bpmn:script>System.out.println(&quot;Harper: Discharge Planning&quot;);</bpmn:script>
+    </bpmn:scriptTask>
     <bpmn:endEvent id="EndEvent_LIP" name="">
       <bpmn:incoming>lf11</bpmn:incoming>
     </bpmn:endEvent>
@@ -153,8 +161,9 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="http://www.java.com/java">return suspiciousFindings == true || draftReferralExists == true;</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="lf6b" sourceRef="UserTask_FinalizeReferral" targetRef="Throw_SuspectTrafficking_LIP" />
-    <bpmn:sequenceFlow id="lf7" sourceRef="Throw_SuspectTrafficking_LIP" targetRef="Task_Diagnosis" />
-    <bpmn:sequenceFlow id="lf8" name="No" sourceRef="Gateway_SuspiciousFindings" targetRef="Task_Diagnosis" />
+    <bpmn:sequenceFlow id="lf7" sourceRef="Throw_SuspectTrafficking_LIP" targetRef="Gateway_MergeDiagnosis" />
+    <bpmn:sequenceFlow id="lf8" name="No" sourceRef="Gateway_SuspiciousFindings" targetRef="Gateway_MergeDiagnosis" />
+    <bpmn:sequenceFlow id="lf8b" sourceRef="Gateway_MergeDiagnosis" targetRef="Task_Diagnosis" />
     <bpmn:sequenceFlow id="lf9" sourceRef="Task_Diagnosis" targetRef="Task_ImmediateCare" />
     <bpmn:sequenceFlow id="lf10" sourceRef="Task_ImmediateCare" targetRef="Task_DischargePlanning" />
     <bpmn:sequenceFlow id="lf11" sourceRef="Task_DischargePlanning" targetRef="EndEvent_LIP" />
@@ -185,6 +194,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Throw_SuspectTrafficking_LIP" bpmnElement="Throw_SuspectTrafficking_LIP">
         <dc:Bounds x="1200" y="20" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_MergeDiagnosis" bpmnElement="Gateway_MergeDiagnosis">
+        <dc:Bounds x="940" y="270" width="40" height="40" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Task_Diagnosis" bpmnElement="Task_Diagnosis">
         <dc:Bounds x="1000" y="255" width="120" height="70" />
@@ -256,12 +268,16 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_lf7" bpmnElement="lf7">
         <di:waypoint x="1218" y="56" />
-        <di:waypoint x="1218" y="290" />
-        <di:waypoint x="1120" y="290" />
+        <di:waypoint x="1218" y="330" />
+        <di:waypoint x="960" y="330" />
+        <di:waypoint x="960" y="310" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_lf8" bpmnElement="lf8">
         <di:waypoint x="940" y="170" />
-        <di:waypoint x="940" y="290" />
+        <di:waypoint x="940" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_lf8b" bpmnElement="lf8b">
+        <di:waypoint x="980" y="290" />
         <di:waypoint x="1000" y="290" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_lf9" bpmnElement="lf9">

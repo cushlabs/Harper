@@ -32,7 +32,8 @@
     <bpmn:messageFlow id="MF_ReadyForIntake" name="Ready for Intake" sourceRef="EndEvent_ReadyForIntake" targetRef="StartEvent_ReadyForIntake" />
   </bpmn:collaboration>
 
-  <bpmn:message id="Message_ReadyForIntake" name="ReadyForIntake" />
+  <bpmn:itemDefinition id="ItemString" structureRef="java.lang.String" />
+  <bpmn:message id="Message_ReadyForIntake" name="ReadyForIntake" itemRef="ItemString" />
   <bpmn:signal id="Signal_SuspectTrafficking" name="Suspect sex trafficking" />
   <bpmn:signal id="Signal_ReferralDrafted" name="Referral drafted" />
 
@@ -96,10 +97,12 @@
       <bpmn:outgoing>Flow_SW_1</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SED_SW" signalRef="Signal_SuspectTrafficking" />
     </bpmn:startEvent>
-    <bpmn:task id="Task_SocialWorker" name="Social Worker">
+    <bpmn:scriptTask id="Task_SocialWorker" name="Social Worker" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_SW_1</bpmn:incoming>
       <bpmn:outgoing>Flow_SW_2</bpmn:outgoing>
-    </bpmn:task>
+    
+      <bpmn:script>System.out.println("Harper: Social Worker");</bpmn:script>
+    </bpmn:scriptTask>
     <bpmn:endEvent id="EndEvent_Investigate" name="Investigate">
       <bpmn:incoming>Flow_SW_2</bpmn:incoming>
     </bpmn:endEvent>

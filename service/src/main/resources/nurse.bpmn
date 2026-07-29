@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Process_Nurse_Sub" targetNamespace="http://harper.health/bpmn/nurse" exporter="Project Harper (reconstructed from diagram)" exporterVersion="0.3">
   <bpmn:itemDefinition id="ItemBoolean" structureRef="java.lang.Boolean" />
+  <bpmn:itemDefinition id="ItemString" structureRef="java.lang.String" />
   <bpmn:process id="Process_Nurse_Sub" name="Nurse (sub-process)" isExecutable="true">
     <bpmn:documentation>Expanded Nurse sub-process. ED Prescreen and Screening Tool of Greenbaum are Kogito DMN business-rule tasks. A positive (at-risk) determination raises a DRAFT social-work referral (FHIR Task status draft) and throws the &#x27;Referral drafted&#x27; signal, which is what starts the Practitioner swimlane. The draft does NOT route; the Practitioner finalizes it, which is the single point that signals the Social Worker.</bpmn:documentation>
     <bpmn:property id="Prop_shouldScreen" name="shouldScreen" itemSubjectRef="ItemBoolean" />
     <bpmn:property id="Prop_atRisk" name="atRisk" itemSubjectRef="ItemBoolean" />
+    <bpmn:property id="Prop_referralStatus" name="referralStatus" itemSubjectRef="ItemString" />
     <bpmn:startEvent id="StartEvent_Nurse" name="">
       <bpmn:outgoing>nf1</bpmn:outgoing>
     </bpmn:startEvent>
@@ -146,11 +148,12 @@
       <bpmn:outgoing>nf7</bpmn:outgoing>
       <bpmn:outgoing>nf9</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:task id="Task_DraftReferral" name="Draft referral">
+    <bpmn:scriptTask id="Task_DraftReferral" name="Draft referral" scriptFormat="http://www.java.com/java">
       <bpmn:documentation>Creates a DRAFT social-work referral (FHIR Task status draft, intent proposal). It does not route to the Social Worker; a Licensed Independent Practitioner finalizes it in the Practitioner sub-process.</bpmn:documentation>
       <bpmn:incoming>nf7</bpmn:incoming>
       <bpmn:outgoing>nf8</bpmn:outgoing>
-    </bpmn:task>
+      <bpmn:script>kcontext.setVariable(&quot;referralStatus&quot;, &quot;draft&quot;);</bpmn:script>
+    </bpmn:scriptTask>
     <bpmn:endEvent id="End_SexTraffickingSuspected" name="Referral drafted">
       <bpmn:incoming>nf8</bpmn:incoming>
       <bpmn:signalEventDefinition id="SED_End_SexTraffickingSuspected" signalRef="Signal_ReferralDrafted" />

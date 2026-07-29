@@ -7,8 +7,9 @@
                   targetNamespace="http://harper.health/bpmn/registrar"
                   exporter="Project Harper (reconstructed from diagram)" exporterVersion="0.1">
 
-  <bpmn:message id="Message_RequestOutsideRecords" name="RequestOutsideRecords" />
-  <bpmn:message id="Message_ReceiveOutsideRecords" name="ReceiveOutsideRecords" />
+  <bpmn:itemDefinition id="ItemString" structureRef="java.lang.String" />
+  <bpmn:message id="Message_RequestOutsideRecords" name="RequestOutsideRecords" itemRef="ItemString" />
+  <bpmn:message id="Message_ReceiveOutsideRecords" name="ReceiveOutsideRecords" itemRef="ItemString" />
   <bpmn:process id="Process_Registrar_Sub" name="Registrar (sub-process)" isExecutable="false">
     <bpmn:documentation>Expanded "Registrar" sub-process from the top-level ED trafficking-detection collaboration. The Request/Receive Outside Records message events correspond to the top-level message flows with the Outside Medical Records pool.</bpmn:documentation>
 
@@ -16,25 +17,33 @@
       <bpmn:outgoing>Flow_1</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:task id="Task_RegistrationArmband" name="Registration and armband">
+    <bpmn:scriptTask id="Task_RegistrationArmband" name="Registration and armband" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_1</bpmn:incoming>
       <bpmn:outgoing>Flow_2</bpmn:outgoing>
-    </bpmn:task>
+    
+      <bpmn:script>System.out.println("Harper: Registration and armband");</bpmn:script>
+    </bpmn:scriptTask>
 
-    <bpmn:task id="Task_TriageRoom" name="Triage room">
+    <bpmn:scriptTask id="Task_TriageRoom" name="Triage room" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_2</bpmn:incoming>
       <bpmn:outgoing>Flow_3</bpmn:outgoing>
-    </bpmn:task>
+    
+      <bpmn:script>System.out.println("Harper: Triage room");</bpmn:script>
+    </bpmn:scriptTask>
 
-    <bpmn:task id="Task_InitialDataCollection" name="Initial data collection">
+    <bpmn:scriptTask id="Task_InitialDataCollection" name="Initial data collection" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_3</bpmn:incoming>
       <bpmn:outgoing>Flow_4</bpmn:outgoing>
-    </bpmn:task>
+    
+      <bpmn:script>System.out.println("Harper: Initial data collection");</bpmn:script>
+    </bpmn:scriptTask>
 
-    <bpmn:task id="Task_EstablishChiefComplaint" name="Establish chief complaint">
+    <bpmn:scriptTask id="Task_EstablishChiefComplaint" name="Establish chief complaint" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_4</bpmn:incoming>
       <bpmn:outgoing>Flow_5</bpmn:outgoing>
-    </bpmn:task>
+    
+      <bpmn:script>System.out.println("Harper: Establish chief complaint");</bpmn:script>
+    </bpmn:scriptTask>
 
     <bpmn:intermediateThrowEvent id="IntermediateThrow_RequestRecords" name="Request Outside Records">
       <bpmn:incoming>Flow_5</bpmn:incoming>
@@ -48,14 +57,13 @@
       <bpmn:messageEventDefinition id="MED_Receive" messageRef="Message_ReceiveOutsideRecords" />
     </bpmn:intermediateCatchEvent>
 
-    <bpmn:task id="Task_OutsideRecordsToEHR" name="Outside records to EHR">
+    <bpmn:scriptTask id="Task_OutsideRecordsToEHR" name="Outside records to EHR" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_7</bpmn:incoming>
       <bpmn:outgoing>Flow_8</bpmn:outgoing>
       <bpmn:property id="Prop_OutRecords" name="outsideRecords" />
-      <bpmn:dataOutputAssociation id="DataOut_EHR">
-        <bpmn:targetRef>DataStoreRef_EHR</bpmn:targetRef>
-      </bpmn:dataOutputAssociation>
-    </bpmn:task>
+    
+      <bpmn:script>System.out.println("Harper: Outside records to EHR");</bpmn:script>
+    </bpmn:scriptTask>
 
     <bpmn:endEvent id="EndEvent_Registrar" name="">
       <bpmn:incoming>Flow_8</bpmn:incoming>
