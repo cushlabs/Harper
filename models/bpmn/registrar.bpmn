@@ -5,13 +5,12 @@
                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
                   id="Definitions_Harper_Registrar"
                   targetNamespace="http://harper.health/bpmn/registrar"
-                  exporter="Project Harper (reconstructed from diagram)" exporterVersion="0.1">
+                  exporter="Project Harper (reconstructed from diagram)" exporterVersion="0.2">
 
   <bpmn:itemDefinition id="ItemString" structureRef="java.lang.String" />
-  <bpmn:message id="Message_RequestOutsideRecords" name="RequestOutsideRecords" itemRef="ItemString" />
-  <bpmn:message id="Message_ReceiveOutsideRecords" name="ReceiveOutsideRecords" itemRef="ItemString" />
+
   <bpmn:process id="Process_Registrar_Sub" name="Registrar (sub-process)" isExecutable="true">
-    <bpmn:documentation>Expanded "Registrar" sub-process from the top-level ED trafficking-detection collaboration. The Request/Receive Outside Records message events correspond to the top-level message flows with the Outside Medical Records pool.</bpmn:documentation>
+    <bpmn:documentation>Registrar sub-process: registration, triage room, initial data collection, chief complaint, and retrieval of outside medical records into the EHR. Retrieving outside records is modelled as a synchronous activity (a placeholder for a FHIR/HIE service task); the five-pool collaboration in ed-trafficking-detection.bpmn documents the same exchange as message flows with the Outside Medical Records participant.</bpmn:documentation>
     <bpmn:property id="Prop_outsideRecords" name="outsideRecords" itemSubjectRef="ItemString" />
 
     <bpmn:startEvent id="StartEvent_Registrar" name="">
@@ -21,81 +20,56 @@
     <bpmn:scriptTask id="Task_RegistrationArmband" name="Registration and armband" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_1</bpmn:incoming>
       <bpmn:outgoing>Flow_2</bpmn:outgoing>
-    
       <bpmn:script>System.out.println("Harper: Registration and armband");</bpmn:script>
     </bpmn:scriptTask>
 
     <bpmn:scriptTask id="Task_TriageRoom" name="Triage room" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_2</bpmn:incoming>
       <bpmn:outgoing>Flow_3</bpmn:outgoing>
-    
       <bpmn:script>System.out.println("Harper: Triage room");</bpmn:script>
     </bpmn:scriptTask>
 
     <bpmn:scriptTask id="Task_InitialDataCollection" name="Initial data collection" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_3</bpmn:incoming>
       <bpmn:outgoing>Flow_4</bpmn:outgoing>
-    
       <bpmn:script>System.out.println("Harper: Initial data collection");</bpmn:script>
     </bpmn:scriptTask>
 
     <bpmn:scriptTask id="Task_EstablishChiefComplaint" name="Establish chief complaint" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_4</bpmn:incoming>
       <bpmn:outgoing>Flow_5</bpmn:outgoing>
-    
       <bpmn:script>System.out.println("Harper: Establish chief complaint");</bpmn:script>
     </bpmn:scriptTask>
 
-    <bpmn:intermediateThrowEvent id="IntermediateThrow_RequestRecords" name="Request Outside Records">
+    <bpmn:scriptTask id="Task_RequestOutsideRecords" name="Request outside records" scriptFormat="http://www.java.com/java">
+      <bpmn:documentation>Requests and receives records from external sources (HIE / outside medical records). Placeholder for a FHIR service task.</bpmn:documentation>
       <bpmn:incoming>Flow_5</bpmn:incoming>
       <bpmn:outgoing>Flow_6</bpmn:outgoing>
-      <bpmn:dataInput id="MED_Request_Input" name="event" itemSubjectRef="ItemString" />
-      <bpmn:dataInputAssociation id="MED_Request_DIA">
-        <bpmn:sourceRef>Prop_outsideRecords</bpmn:sourceRef>
-        <bpmn:targetRef>MED_Request_Input</bpmn:targetRef>
-      </bpmn:dataInputAssociation>
-      <bpmn:inputSet id="MED_Request_IS"><bpmn:dataInputRefs>MED_Request_Input</bpmn:dataInputRefs></bpmn:inputSet>
-      <bpmn:messageEventDefinition id="MED_Request" messageRef="Message_RequestOutsideRecords" />
-    </bpmn:intermediateThrowEvent>
-
-    <bpmn:intermediateCatchEvent id="IntermediateCatch_ReceiveRecords" name="Receive Outside Records">
-      <bpmn:incoming>Flow_6</bpmn:incoming>
-      <bpmn:outgoing>Flow_7</bpmn:outgoing>
-      <bpmn:dataOutput id="MED_Receive_Output" name="event" itemSubjectRef="ItemString" />
-      <bpmn:dataOutputAssociation id="MED_Receive_DOA">
-        <bpmn:sourceRef>MED_Receive_Output</bpmn:sourceRef>
-        <bpmn:targetRef>Prop_outsideRecords</bpmn:targetRef>
-      </bpmn:dataOutputAssociation>
-      <bpmn:outputSet id="MED_Receive_OS"><bpmn:dataOutputRefs>MED_Receive_Output</bpmn:dataOutputRefs></bpmn:outputSet>
-      <bpmn:messageEventDefinition id="MED_Receive" messageRef="Message_ReceiveOutsideRecords" />
-    </bpmn:intermediateCatchEvent>
+      <bpmn:script>kcontext.setVariable("outsideRecords", "retrieved");</bpmn:script>
+    </bpmn:scriptTask>
 
     <bpmn:scriptTask id="Task_OutsideRecordsToEHR" name="Outside records to EHR" scriptFormat="http://www.java.com/java">
-      <bpmn:incoming>Flow_7</bpmn:incoming>
-      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
       <bpmn:script>System.out.println("Harper: Outside records to EHR");</bpmn:script>
     </bpmn:scriptTask>
 
     <bpmn:endEvent id="EndEvent_Registrar" name="">
-      <bpmn:incoming>Flow_8</bpmn:incoming>
+      <bpmn:incoming>Flow_7</bpmn:incoming>
     </bpmn:endEvent>
-
-    <bpmn:dataStoreReference id="DataStoreRef_EHR" name="EHR" />
 
     <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_Registrar" targetRef="Task_RegistrationArmband" />
     <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_RegistrationArmband" targetRef="Task_TriageRoom" />
     <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_TriageRoom" targetRef="Task_InitialDataCollection" />
     <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_InitialDataCollection" targetRef="Task_EstablishChiefComplaint" />
-    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_EstablishChiefComplaint" targetRef="IntermediateThrow_RequestRecords" />
-    <bpmn:sequenceFlow id="Flow_6" sourceRef="IntermediateThrow_RequestRecords" targetRef="IntermediateCatch_ReceiveRecords" />
-    <bpmn:sequenceFlow id="Flow_7" sourceRef="IntermediateCatch_ReceiveRecords" targetRef="Task_OutsideRecordsToEHR" />
-    <bpmn:sequenceFlow id="Flow_8" sourceRef="Task_OutsideRecordsToEHR" targetRef="EndEvent_Registrar" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_EstablishChiefComplaint" targetRef="Task_RequestOutsideRecords" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_RequestOutsideRecords" targetRef="Task_OutsideRecordsToEHR" />
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Task_OutsideRecordsToEHR" targetRef="EndEvent_Registrar" />
   </bpmn:process>
 
   <!-- ============ DIAGRAM INTERCHANGE ============ -->
   <bpmndi:BPMNDiagram id="BPMNDiagram_Registrar">
     <bpmndi:BPMNPlane id="BPMNPlane_Registrar" bpmnElement="Process_Registrar_Sub">
-
       <bpmndi:BPMNShape id="Shape_Start" bpmnElement="StartEvent_Registrar">
         <dc:Bounds x="160" y="202" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -111,23 +85,14 @@
       <bpmndi:BPMNShape id="Shape_ChiefComplaint" bpmnElement="Task_EstablishChiefComplaint">
         <dc:Bounds x="750" y="180" width="120" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Request" bpmnElement="IntermediateThrow_RequestRecords">
-        <dc:Bounds x="920" y="202" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="893" y="245" width="90" height="27" /></bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Receive" bpmnElement="IntermediateCatch_ReceiveRecords">
-        <dc:Bounds x="1010" y="202" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="983" y="245" width="90" height="27" /></bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Shape_RequestRecords" bpmnElement="Task_RequestOutsideRecords">
+        <dc:Bounds x="920" y="180" width="120" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_ToEHR" bpmnElement="Task_OutsideRecordsToEHR">
         <dc:Bounds x="1090" y="180" width="120" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_End" bpmnElement="EndEvent_Registrar">
         <dc:Bounds x="1260" y="202" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_DataStoreEHR" bpmnElement="DataStoreRef_EHR">
-        <dc:Bounds x="1125" y="360" width="50" height="50" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1138" y="415" width="24" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Edge_1" bpmnElement="Flow_1">
@@ -146,15 +111,11 @@
         <di:waypoint x="870" y="220" /><di:waypoint x="920" y="220" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_6" bpmnElement="Flow_6">
-        <di:waypoint x="956" y="220" /><di:waypoint x="1010" y="220" />
+        <di:waypoint x="1040" y="220" /><di:waypoint x="1090" y="220" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_7" bpmnElement="Flow_7">
-        <di:waypoint x="1046" y="220" /><di:waypoint x="1090" y="220" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_8" bpmnElement="Flow_8">
         <di:waypoint x="1210" y="220" /><di:waypoint x="1260" y="220" />
       </bpmndi:BPMNEdge>
-
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
