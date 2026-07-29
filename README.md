@@ -42,6 +42,7 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 - **`ed-trafficking-detection.bpmn`** documents the same pathway as a five-pool collaboration. It is a design artifact and is deliberately **not** compiled: in BPMN each pool is a separate process, so a collaboration cannot yield a single end-to-end instance.
 - **Signals:** the Nurse's at-risk decision throws `Referral drafted` (which starts the Practitioner swimlane); the Practitioner's *Finalize* step throws `Suspect sex trafficking` (which starts the Social Worker).
 - **DMN:** *ED Prescreen* (decision table), *Greenbaum* (≥ 2 of six items), *Alarm Signs* (count + threshold). Business-rule tasks bind to these via Kogito's `implementation="http://www.jboss.org/drools/dmn"`.
+- **Screen performance.** At the ≥ 2 cutoff, the multi-site evaluation ([Greenbaum VJ et al., *J Adolesc Health* 2018](https://doi.org/10.1016/j.jadohealth.2018.06.032); n = 810 across 16 sites) reported **83.3% sensitivity and 49.4% specificity in emergency departments** (84.4% / 57.5% across the total sample; NPV 95.1% / 96.7%). The original single-site study reported 92.3% / 74.4% — better than the multi-site result, and not what an ED should plan around. Specificity near 50% means a high false-positive rate: roughly a third of non-victims screen positive. Size the downstream social-work path for that.
 - Open the models in any BPMN/DMN tool — Kogito, bpmn.io, Camunda Modeler, or Trisotech.
 
 ## Run it

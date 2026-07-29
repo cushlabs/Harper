@@ -52,7 +52,7 @@
   </inputData>
 
   <decision id="Decision_Greenbaum" name="atRisk">
-    <description>Screening Tool of Greenbaum. Validated Short Screen for Child Sex Trafficking (Greenbaum). Positive ("At risk?") when two or more of the six items are positive; the partner item counts positive when the number of partners exceeds five. Validated cutoff >= 2 (sensitivity 92%, specificity 73%, NPV 97%).</description>
+    <description>Screening Tool of Greenbaum. Short Screen for Child Sex Trafficking (SSCST). Positive ("At risk?") when two or more of the six items are positive; the partner item counts positive when the number of partners exceeds five. PERFORMANCE AT CUTOFF &gt;= 2 -- cite the setting, not the best case. Multi-site evaluation (Greenbaum VJ et al., J Adolesc Health 2018; n=810 across 16 sites): emergency-department subgroup (n=91) sensitivity 83.3%, specificity 49.4%, PPV 20.0%, NPV 95.1%; total sample sensitivity 84.4%, specificity 57.5%, PPV 19.9%, NPV 96.7%. The ED figures are the ones applicable to Harper. Original single-site study (Greenbaum VJ, Dodd M, McCracken C, Pediatric Emergency Care, PMID 26599463) reported sensitivity 92.3%, specificity 74.4% -- notably better than the multi-site result; do not quote it as Harper's expected performance. Specificity near 50% means roughly a third of non-victims screen positive: expect a high false-positive rate and staff the downstream referral path accordingly.</description>
     <variable id="var_atRisk" name="atRisk" typeRef="boolean" />
     <informationRequirement id="ir_gb_1"><requiredInput href="#ID_trauma" /></informationRequirement>
     <informationRequirement id="ir_gb_2"><requiredInput href="#ID_runaway" /></informationRequirement>
