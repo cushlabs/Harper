@@ -39,6 +39,7 @@
 
   <!-- ============ REGISTRATION ============ -->
   <bpmn:process id="Process_Registration" name="Registration" isExecutable="false">
+    <bpmn:property id="Prop_intakeMsg" name="intakeMessage" itemSubjectRef="ItemString" />
     <bpmn:startEvent id="StartEvent_PatientArrives" name="Pediatric Patient Arrives at ED">
       <bpmn:outgoing>Flow_Reg_1</bpmn:outgoing>
     </bpmn:startEvent>
@@ -49,6 +50,12 @@
     </bpmn:callActivity>
     <bpmn:endEvent id="EndEvent_ReadyForIntake" name="Ready for Intake">
       <bpmn:incoming>Flow_Reg_2</bpmn:incoming>
+      <bpmn:dataInput id="MED_Reg_out_Input" name="event" itemSubjectRef="ItemString" />
+      <bpmn:dataInputAssociation id="MED_Reg_out_DIA">
+        <bpmn:sourceRef>Prop_intakeMsg</bpmn:sourceRef>
+        <bpmn:targetRef>MED_Reg_out_Input</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:inputSet id="MED_Reg_out_IS"><bpmn:dataInputRefs>MED_Reg_out_Input</bpmn:dataInputRefs></bpmn:inputSet>
       <bpmn:messageEventDefinition id="MED_Reg_out" messageRef="Message_ReadyForIntake" />
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_Reg_1" sourceRef="StartEvent_PatientArrives" targetRef="CallActivity_Registrar" />
@@ -57,8 +64,15 @@
 
   <!-- ============ NURSE ============ -->
   <bpmn:process id="Process_Nurse" name="Nurse" isExecutable="false">
+    <bpmn:property id="Prop_intakeMsg" name="intakeMessage" itemSubjectRef="ItemString" />
     <bpmn:startEvent id="StartEvent_ReadyForIntake" name="Ready for Intake">
       <bpmn:outgoing>Flow_Nurse_1</bpmn:outgoing>
+      <bpmn:dataOutput id="MED_Nurse_in_Output" name="event" itemSubjectRef="ItemString" />
+      <bpmn:dataOutputAssociation id="MED_Nurse_in_DOA">
+        <bpmn:sourceRef>MED_Nurse_in_Output</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_intakeMsg</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:outputSet id="MED_Nurse_in_OS"><bpmn:dataOutputRefs>MED_Nurse_in_Output</bpmn:dataOutputRefs></bpmn:outputSet>
       <bpmn:messageEventDefinition id="MED_Nurse_in" messageRef="Message_ReadyForIntake" />
     </bpmn:startEvent>
     <bpmn:callActivity id="CallActivity_Nurse" name="Nurse" calledElement="Process_Nurse_Sub">
@@ -75,8 +89,15 @@
 
   <!-- ============ LICENSED INDEPENDENT PRACTITIONER ============ -->
   <bpmn:process id="Process_LIP" name="Licensed Independent Practitioner" isExecutable="false">
+    <bpmn:property id="Prop_referralDraftedMsg" name="referralDrafted" itemSubjectRef="ItemString" />
     <bpmn:startEvent id="StartEvent_ReadyToExamine" name="Referral drafted">
       <bpmn:outgoing>Flow_LIP_1</bpmn:outgoing>
+      <bpmn:dataOutput id="SED_LIP_in_Output" name="event" itemSubjectRef="ItemString" />
+      <bpmn:dataOutputAssociation id="SED_LIP_in_DOA">
+        <bpmn:sourceRef>SED_LIP_in_Output</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_referralDraftedMsg</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:outputSet id="SED_LIP_in_OS"><bpmn:dataOutputRefs>SED_LIP_in_Output</bpmn:dataOutputRefs></bpmn:outputSet>
       <bpmn:signalEventDefinition id="SED_LIP_in" signalRef="Signal_ReferralDrafted" />
     </bpmn:startEvent>
     <bpmn:callActivity id="CallActivity_LIP" name="Licensed Independent Practitioner" calledElement="Process_LIP_Sub">
@@ -93,8 +114,15 @@
 
   <!-- ============ SOCIAL WORKER ============ -->
   <bpmn:process id="Process_SW" name="Social Worker" isExecutable="false">
+    <bpmn:property id="Prop_suspectMsg" name="suspectTrafficking" itemSubjectRef="ItemString" />
     <bpmn:startEvent id="StartEvent_SuspectTrafficking" name="Suspect sex trafficking">
       <bpmn:outgoing>Flow_SW_1</bpmn:outgoing>
+      <bpmn:dataOutput id="SED_SW_Output" name="event" itemSubjectRef="ItemString" />
+      <bpmn:dataOutputAssociation id="SED_SW_DOA">
+        <bpmn:sourceRef>SED_SW_Output</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_suspectMsg</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:outputSet id="SED_SW_OS"><bpmn:dataOutputRefs>SED_SW_Output</bpmn:dataOutputRefs></bpmn:outputSet>
       <bpmn:signalEventDefinition id="SED_SW" signalRef="Signal_SuspectTrafficking" />
     </bpmn:startEvent>
     <bpmn:scriptTask id="Task_SocialWorker" name="Social Worker" scriptFormat="http://www.java.com/java">

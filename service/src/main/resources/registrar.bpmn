@@ -12,6 +12,7 @@
   <bpmn:message id="Message_ReceiveOutsideRecords" name="ReceiveOutsideRecords" itemRef="ItemString" />
   <bpmn:process id="Process_Registrar_Sub" name="Registrar (sub-process)" isExecutable="false">
     <bpmn:documentation>Expanded "Registrar" sub-process from the top-level ED trafficking-detection collaboration. The Request/Receive Outside Records message events correspond to the top-level message flows with the Outside Medical Records pool.</bpmn:documentation>
+    <bpmn:property id="Prop_outsideRecords" name="outsideRecords" itemSubjectRef="ItemString" />
 
     <bpmn:startEvent id="StartEvent_Registrar" name="">
       <bpmn:outgoing>Flow_1</bpmn:outgoing>
@@ -48,12 +49,24 @@
     <bpmn:intermediateThrowEvent id="IntermediateThrow_RequestRecords" name="Request Outside Records">
       <bpmn:incoming>Flow_5</bpmn:incoming>
       <bpmn:outgoing>Flow_6</bpmn:outgoing>
+      <bpmn:dataInput id="MED_Request_Input" name="event" itemSubjectRef="ItemString" />
+      <bpmn:dataInputAssociation id="MED_Request_DIA">
+        <bpmn:sourceRef>Prop_outsideRecords</bpmn:sourceRef>
+        <bpmn:targetRef>MED_Request_Input</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:inputSet id="MED_Request_IS"><bpmn:dataInputRefs>MED_Request_Input</bpmn:dataInputRefs></bpmn:inputSet>
       <bpmn:messageEventDefinition id="MED_Request" messageRef="Message_RequestOutsideRecords" />
     </bpmn:intermediateThrowEvent>
 
     <bpmn:intermediateCatchEvent id="IntermediateCatch_ReceiveRecords" name="Receive Outside Records">
       <bpmn:incoming>Flow_6</bpmn:incoming>
       <bpmn:outgoing>Flow_7</bpmn:outgoing>
+      <bpmn:dataOutput id="MED_Receive_Output" name="event" itemSubjectRef="ItemString" />
+      <bpmn:dataOutputAssociation id="MED_Receive_DOA">
+        <bpmn:sourceRef>MED_Receive_Output</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_outsideRecords</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:outputSet id="MED_Receive_OS"><bpmn:dataOutputRefs>MED_Receive_Output</bpmn:dataOutputRefs></bpmn:outputSet>
       <bpmn:messageEventDefinition id="MED_Receive" messageRef="Message_ReceiveOutsideRecords" />
     </bpmn:intermediateCatchEvent>
 
