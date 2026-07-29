@@ -60,8 +60,6 @@
     <bpmn:scriptTask id="Task_OutsideRecordsToEHR" name="Outside records to EHR" scriptFormat="http://www.java.com/java">
       <bpmn:incoming>Flow_7</bpmn:incoming>
       <bpmn:outgoing>Flow_8</bpmn:outgoing>
-      <bpmn:property id="Prop_OutRecords" name="outsideRecords" />
-    
       <bpmn:script>System.out.println("Harper: Outside records to EHR");</bpmn:script>
     </bpmn:scriptTask>
 
@@ -142,9 +140,6 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_8" bpmnElement="Flow_8">
         <di:waypoint x="1210" y="220" /><di:waypoint x="1260" y="220" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_DataOut" bpmnElement="DataOut_EHR">
-        <di:waypoint x="1150" y="260" /><di:waypoint x="1150" y="360" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>
