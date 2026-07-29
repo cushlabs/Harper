@@ -7,6 +7,10 @@ FHIR R4 resources (QuestionnaireResponse, RiskAssessment, Flag, Task).
 
 This is a PROTOTYPE with synthetic data. Not for clinical use.
 
+LICENSING: the Greenbaum screening items and >= 2 cutoff implemented below are
+CC BY-NC-ND 4.0 content owned by their authors (PMID 26599463), NOT Apache 2.0.
+NonCommercial and NoDerivatives clauses apply. See NOTICE at the repo root.
+
 Run:
     pip install -r requirements.txt
     uvicorn app:app --reload

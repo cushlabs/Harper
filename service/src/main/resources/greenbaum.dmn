@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  LICENSING NOTICE - READ BEFORE REUSE
+
+  The STRUCTURE of this DMN model (element ids, FEEL expression, layout) is
+  licensed under the Apache License 2.0, as with the rest of Project Harper.
+
+  The CLINICAL CONTENT it encodes - the six screening items and the >= 2
+  cutoff of the Greenbaum Short Screen for Child Sex Trafficking (SSCST) - is
+  NOT. That content originates with Greenbaum VJ, Dodd M, McCracken C
+  (Pediatric Emergency Care, PMID 26599463) and is made available under
+  CC BY-NC-ND 4.0: https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+  NonCommercial and NoDerivatives clauses apply. Commercial deployment may
+  require separate permission from the rights holder. Whether this DMN
+  encoding is a permitted reproduction or a derivative work has not been
+  reviewed by counsel. See NOTICE at the repository root.
+-->
 <definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
              xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
              xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"

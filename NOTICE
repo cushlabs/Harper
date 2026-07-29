@@ -1,0 +1,58 @@
+Project Harper
+Copyright 2026 Ben Cushing / Project Harper
+
+This product includes software developed by Project Harper, licensed under
+the Apache License, Version 2.0 (see LICENSE).
+
+================================================================================
+THIRD-PARTY CONTENT UNDER SEPARATE LICENSE
+================================================================================
+
+Greenbaum Short Screen for Child Sex Trafficking (SSCST)
+--------------------------------------------------------------------------------
+License:  Creative Commons Attribution-NonCommercial-NoDerivatives 4.0
+          International (CC BY-NC-ND 4.0)
+          https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+Attribution:
+  Greenbaum VJ, Dodd M, McCracken C. "A Short Screening Tool to Identify
+  Victims of Child Sex Trafficking in the Health Care Setting."
+  Pediatric Emergency Care. PMID 26599463.
+  https://pubmed.ncbi.nlm.nih.gov/26599463/
+
+The six screening items, the >= 2 positive cutoff, and the associated
+validation characteristics of this instrument are clinical content owned by
+its authors. They are NOT covered by the Apache License 2.0 that governs the
+rest of this repository.
+
+This content appears in, or is referenced by, the following files:
+
+  models/dmn/greenbaum.dmn
+  service/src/main/resources/greenbaum.dmn
+  archive/prototype/app.py
+  archive/prototype/index.html
+  docs/use-case-specification.docx
+
+Adopter obligations:
+
+  * NonCommercial (NC) - The CC grant does not cover commercial use. Use of
+    this instrument by a for-profit health system, or in any commercial
+    product or service, may require separate permission from the rights
+    holder. Adopters are responsible for obtaining it.
+
+  * NoDerivatives (ND) - Distribution of adapted or modified versions of the
+    instrument is restricted. Project Harper encodes the items in DMN with
+    reworded labels and an explicit partner-count threshold. Whether this
+    encoding constitutes a permitted reproduction or a prohibited derivative
+    work has NOT been reviewed by legal counsel and remains an open question.
+
+  * Attribution (BY) - Retain the citation above in any redistribution.
+
+Project Harper does not grant, and cannot grant, any rights to this
+instrument. Nothing in this repository is legal advice.
+
+================================================================================
+
+Open-source dependencies (Kogito, Quarkus, FastAPI, and their transitive
+dependencies) are licensed under their own terms; see each project's
+distribution for details.

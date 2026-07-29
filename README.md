@@ -2,7 +2,7 @@
 
 **Open-source, real-time detection of human trafficking in the emergency department.**
 
-Project Harper detects possible child sex trafficking in real time during an emergency-department (ED) visit and connects suspected victims to help before discharge. It is a license-free rebuild of the 2022 HIMSS "Greenbaum 2.0" interoperability blueprint, built entirely on open standards and open-source software so a commercial hospital ED can adopt it without paying for the detection capability itself.
+Project Harper detects possible child sex trafficking in real time during an emergency-department (ED) visit and connects suspected victims to help before discharge. It is an open-source rebuild of the 2022 HIMSS "Greenbaum 2.0" interoperability blueprint, built entirely on open standards so an ED can adopt the *implementation* without licensing fees. The clinical instrument it administers — the Greenbaum Short Screen — carries its own separate terms. **Read [License](#license) before deploying.**
 
 > **Synthetic data only.** Nothing here is for clinical use without appropriate governance, local validation, and safeguards.
 
@@ -12,7 +12,7 @@ As a patient moves through registration → triage → examination → discharge
 
 ## Open stack
 
-FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubernetes. Every layer is open-source and permissively licensed.
+FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubernetes. Every layer of the *technology stack* is open-source and permissively licensed. The Greenbaum screening instrument encoded in the decision models is **not** — see [License](#license).
 
 ## Repository layout
 
@@ -67,4 +67,25 @@ The `service/` module is tested under one command — `mvn verify` (unit + integ
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE).
+This repository is **split-licensed**, and the distinction matters before you deploy.
+
+### Code, models, and documentation — Apache License 2.0
+
+Everything Project Harper authored — the BPMN processes, the Kogito/Quarkus service, the DMN model structure, the documentation, and the archived prototype — is licensed under the [Apache License 2.0](LICENSE). Free to use, modify, and redistribute, commercially or otherwise.
+
+### The Greenbaum screening instrument — CC BY-NC-ND 4.0
+
+The *clinical content* of the Greenbaum Short Screen for Child Sex Trafficking (SSCST) — the six screening items and the ≥ 2 cutoff encoded in [`models/dmn/greenbaum.dmn`](models/dmn/greenbaum.dmn) — originates with V. Jordan Greenbaum and colleagues and is made available under [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/).
+
+**Apache 2.0 does not extend to that content.** Two clauses constrain adopters:
+
+- **NonCommercial (NC).** Use of the instrument in a commercial setting — which may include deployment by a for-profit health system — falls outside the CC grant. Adopters are responsible for securing appropriate permission from the rights holder for their own use.
+- **NoDerivatives (ND).** Distribution of adapted or modified versions of the instrument is restricted. Harper encodes the items in DMN with reworded labels and an explicit partner-count threshold. **Whether that encoding is a permitted reproduction or a derivative work has not been reviewed by counsel.** Treat it as an open question.
+
+Project Harper does not grant, and cannot grant, any rights to the Greenbaum instrument. If you intend to run this in a commercial or clinical setting, obtain your own licensing determination first. Nothing in this repository is legal advice.
+
+### Attribution
+
+> Greenbaum VJ, Dodd M, McCracken C. *A Short Screening Tool to Identify Victims of Child Sex Trafficking in the Health Care Setting.* Pediatric Emergency Care. [PMID 26599463](https://pubmed.ncbi.nlm.nih.gov/26599463/)
+
+See [NOTICE](NOTICE) for the full third-party attribution record.
