@@ -31,8 +31,8 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 │       ├── ed-prescreen.dmn              Should the patient be screened?
 │       ├── greenbaum.dmn                 At risk? (>= 2 of six items)
 │       └── alarm-signs.dmn               Count + suspicious-findings threshold
-├── prototype/                           Runnable FastAPI service + web UI (mock)
-└── service/                             Kogito / Quarkus service — runs the real models
+├── service/                             Kogito / Quarkus service — executes the models
+└── archive/                             Superseded material (early prototype), unmaintained
 ```
 
 ## The models
@@ -42,20 +42,22 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 - **DMN:** *ED Prescreen* (decision table), *Greenbaum* (≥ 2 of six items), *Alarm Signs* (count + threshold). Business-rule tasks bind to these via Kogito's `implementation="http://www.jboss.org/drools/dmn"`.
 - Open the models in any BPMN/DMN tool — Kogito, bpmn.io, Camunda Modeler, or Trisotech.
 
-## Run the prototype
+## Run it
 
 ```bash
-cd prototype
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app:app --reload
+cd service
+mvn quarkus:dev
 ```
 
-Then open **http://localhost:8000** (API docs at `/docs`). You can also open `prototype/index.html` directly in a browser — it runs the same decision logic client-side, with a pinned BPMN process view that highlights as you work through an encounter. See [`prototype/README.md`](prototype/README.md).
+Then open **http://localhost:8080** (Swagger UI at `/q/swagger-ui`). Kogito generates a REST endpoint per executable process and per DMN decision — no hand-written business logic. See [`service/README.md`](service/README.md).
+
+## Source of truth
+
+The BPMN and DMN files in `models/` define **all** process and decision logic. `service/src/main` contains no hand-written Java — everything is generated from the models at build time. Keep it that way: change a rule by editing the model, never by writing code.
 
 ## Roadmap
 
-The [`service/`](service/) module scaffolds the Kogito/Quarkus app that executes these BPMN/DMN files on the real engine (Kubernetes-ready via `quarkus-kubernetes`). Remaining work: harden the models for a clean Kogito build (see [`service/README.md`](service/README.md)), add a typed data model, and back it with a HAPI FHIR server.
+The [`service/`](service/) module runs these BPMN/DMN files on Kogito (Kubernetes-ready via `quarkus-kubernetes`). Remaining work: finish hardening the models for a clean Kogito build (see [`service/README.md`](service/README.md)), replace the placeholder script tasks with real FHIR service tasks, add SMART on FHIR / CDS Hooks endpoints, and back it with a HAPI FHIR server.
 
 ## Tests & CI
 
