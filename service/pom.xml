@@ -15,9 +15,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.16.10.Final</quarkus.platform.version>
-    <kogito.version>1.44.0.Final</kogito.version>
-    <surefire-plugin.version>3.1.2</surefire-plugin.version>
+    <quarkus.platform.version>3.27.2</quarkus.platform.version>
+    <kogito.version>10.2.0</kogito.version>
+    <surefire-plugin.version>3.5.2</surefire-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -40,25 +40,23 @@
   </dependencyManagement>
 
   <dependencies>
-    <!-- Kogito: BPMN processes + DMN decisions, each auto-exposed as REST -->
+    <!-- BPMN processes + DMN decisions, each auto-exposed as REST.
+         Under Apache KIE 10.x this single artifact replaces the old
+         kogito-quarkus-processes + kogito-quarkus-decisions pair: it bundles
+         org.jbpm:jbpm-quarkus (BPMN) with org.drools:drools-quarkus-decisions (DMN).
+         To slim it down once the build is green, depend on those two directly
+         instead — the bundle also pulls in drools-quarkus-rules and
+         kie-quarkus-predictions, which Harper does not use. -->
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-quarkus-processes</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-quarkus-decisions</artifactId>
-    </dependency>
-    <!-- Optional: process instance management REST API -->
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-quarkus-process-management</artifactId>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-with-drools-quarkus</artifactId>
     </dependency>
 
-    <!-- REST + JSON (generated Kogito endpoints are served here) -->
+    <!-- REST + JSON (generated Kogito endpoints are served here).
+         Quarkus 3 renamed quarkus-resteasy-reactive-jackson -> quarkus-rest-jackson. -->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+      <artifactId>quarkus-rest-jackson</artifactId>
     </dependency>
     <!-- OpenAPI + Swagger UI (enabled in dev at /q/swagger-ui) -->
     <dependency>

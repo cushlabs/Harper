@@ -2,7 +2,7 @@
 
 Executes the Project Harper **BPMN** processes and **DMN** decisions on [Kogito](https://kogito.kie.org/) (Quarkus), auto-generating REST endpoints for each. Pair it with the [`../ui`](../ui) clinical workstation, or drive it directly from Swagger UI. (The early FastAPI mock now lives in [`../archive/prototype`](../archive/prototype) and is unmaintained.)
 
-- **Kogito** 1.44.0.Final · **Quarkus** 2.16.10.Final · **JDK 17** · **Maven 3.8+**
+- **Apache KIE / Kogito** 10.2.0 · **Quarkus** 3.27.2 (LTS line) · **JDK 17** · **Maven 3.8+**
 
 The BPMN/DMN in `src/main/resources/` are copies of the canonical models in `../models`. After editing a model, re-sync:
 
