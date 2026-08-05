@@ -30,9 +30,10 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 │   │   └── ed-trafficking-detection.bpmn  5-pool collaboration — design artifact, not compiled
 │   └── dmn/                              DMN 1.3 decision models
 │       ├── ed-prescreen.dmn              Should the patient be screened?
-│       ├── greenbaum.dmn                 At risk? (>= 2 of six items)
+│       ├── greenbaum.dmn                 At risk? (>= 2 of six items; modified + original)
 │       └── alarm-signs.dmn               Count + suspicious-findings threshold
 ├── service/                             Kogito / Quarkus service — executes the models
+├── ui/                                  React + Vite clinical workstation (talks to the service)
 └── archive/                             Superseded material (early prototype), unmaintained
 ```
 
@@ -55,12 +56,37 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 
 ## Run it
 
+**Prerequisites:** JDK 17 · Maven 3.8+ · Node 18+ (for the UI). No Docker needed — Kogito's
+Data Index dev service is disabled by default.
+
+Harper is two processes: the **engine** (Kogito/Quarkus, serves the API) and the **UI**
+(React/Vite). Run both, in two terminals:
+
 ```bash
-cd service
-mvn quarkus:dev
+# 1) the engine — REST endpoints generated from the BPMN/DMN models
+cd service && mvn quarkus:dev          # http://localhost:8080
+
+# 2) the UI — clinical workstation
+cd ui && npm install && npm run dev    # http://localhost:5173
 ```
 
-Then open **http://localhost:8080** (Swagger UI at `/q/swagger-ui`). Kogito generates a REST endpoint per executable process and per DMN decision — no hand-written business logic. See [`service/README.md`](service/README.md).
+Then open **<http://localhost:5173>** and walk a synthetic patient through the pathway.
+
+The engine has no UI of its own — port 8080 is the API. Useful entry points there:
+
+| URL | What |
+|---|---|
+| `http://localhost:8080/q/swagger-ui` | every generated endpoint, try them directly |
+| `http://localhost:8080/q/openapi` | the OpenAPI document |
+| `http://localhost:8080/q/health` | liveness / readiness |
+
+Kogito generates one REST endpoint per executable process and per DMN decision — there is no
+hand-written business logic. Vite proxies `/api/*` to port 8080, so the browser sees a single
+origin; the service also allows CORS from `localhost:5173` for direct calls. Point the UI at a
+different backend with `HARPER_API=http://host:8080 npm run dev`.
+
+**Engine only?** Skip step 2 and drive the API from Swagger UI. See
+[`service/README.md`](service/README.md). **UI details:** [`ui/README.md`](ui/README.md).
 
 ## Source of truth
 
@@ -68,11 +94,11 @@ The BPMN and DMN files in `models/` define **all** process and decision logic. `
 
 ## Roadmap
 
-The [`service/`](service/) module runs these BPMN/DMN files on Kogito (Kubernetes-ready via `quarkus-kubernetes`). Remaining work: finish hardening the models for a clean Kogito build (see [`service/README.md`](service/README.md)), replace the placeholder script tasks with real FHIR service tasks, add SMART on FHIR / CDS Hooks endpoints, and back it with a HAPI FHIR server.
+The [`service/`](service/) module runs these BPMN/DMN files on Kogito (Kubernetes-ready via `quarkus-kubernetes`) and builds green. **The FHIR, CDS Hooks and SMART on FHIR layers are not built yet** — the models call placeholder script tasks, not a real FHIR server. Remaining work: replace those with real FHIR service tasks, add SMART on FHIR / CDS Hooks endpoints, back it with a HAPI FHIR server, and add a partial-screen path so an incomplete screen does not fail (see [`service/README.md`](service/README.md)).
 
 ## Tests & CI
 
-The `service/` module is tested under one command — `mvn verify` (unit + integration + coverage) — and [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs it on every push and pull request. Going forward, new processes and decisions land with tests. See [`service/README.md`](service/README.md#tests).
+The `service/` module is tested under one command — `mvn verify` from the repo root (unit + integration + coverage) — and [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs it on every push and pull request. Going forward, new processes and decisions land with tests. See [`service/README.md`](service/README.md#tests).
 
 ## License
 

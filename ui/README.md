@@ -48,9 +48,12 @@ model in [`../models`](../models), never by editing this app.
 | Call | Purpose |
 |---|---|
 | `POST /EDPrescreen` | should this patient be screened? |
-| `POST /GreenbaumScreen` | at risk? (≥ 2 of six) |
+| `POST /GreenbaumScreen` | at risk? (≥ 2 of six) — returns `atRisk` (modified tool, what the UI shows) and `atRiskOriginalScreen` (comparison) |
 | `POST /AlarmSigns` | alarm-sign count + suspicious findings |
 | `POST /Process_EDEncounter` | start an encounter instance |
 | `GET /Process_EDEncounter[/{id}]` | list / fetch instances |
+
+All DMN inputs are required on every call — a missing field returns HTTP 500, not a validation
+error. `src/api.js` always sends complete bodies.
 
 Verify against `http://localhost:8080/q/swagger-ui`.

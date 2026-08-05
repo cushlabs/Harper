@@ -1,6 +1,6 @@
 # Harper — Kogito / Quarkus service
 
-Executes the Project Harper **BPMN** processes and **DMN** decisions on [Kogito](https://kogito.kie.org/) (Quarkus), auto-generating REST endpoints for each. This is the real-engine counterpart to the `../prototype` mock.
+Executes the Project Harper **BPMN** processes and **DMN** decisions on [Kogito](https://kogito.kie.org/) (Quarkus), auto-generating REST endpoints for each. Pair it with the [`../ui`](../ui) clinical workstation, or drive it directly from Swagger UI. (The early FastAPI mock now lives in [`../archive/prototype`](../archive/prototype) and is unmaintained.)
 
 - **Kogito** 1.44.0.Final · **Quarkus** 2.16.10.Final · **JDK 17** · **Maven 3.8+**
 
@@ -22,6 +22,10 @@ mvn quarkus:dev
 - OpenAPI: http://localhost:8080/q/openapi
 - Health: http://localhost:8080/q/health
 
+This module serves the **API only** — there is no UI on 8080. For the clinical workstation run
+[`../ui`](../ui) alongside it (`cd ui && npm install && npm run dev`, then open
+<http://localhost:5173>). CORS is already open to `localhost:5173`.
+
 Kogito generates one REST resource per **executable** process and one per **DMN model**:
 
 - **`Process_EDEncounter`** — the orchestrator. Start one instance per ED encounter; it calls Registrar → Nurse → (conditionally) Practitioner and is the end-to-end record for reporting. Use the process-management endpoints (and Kogito Data Index, if deployed) to query instances, stage timings, and outcomes.
@@ -30,13 +34,26 @@ Kogito generates one REST resource per **executable** process and one per **DMN 
 
 The five-pool collaboration (`ed-trafficking-detection.bpmn`) is **not** compiled — see `sync-models.sh`. Browse the exact generated paths in Swagger UI once the app starts.
 
-Example (shape will match the generated OpenAPI):
+Example:
 
 ```bash
-# Evaluate the Greenbaum decision
-curl -X POST http://localhost:8080/<greenbaum-endpoint> \
+# Evaluate the Greenbaum decision. ALL SEVEN inputs are required --
+# omitting any one returns HTTP 500, not a validation error.
+curl -X POST http://localhost:8080/GreenbaumScreen \
   -H 'Content-Type: application/json' \
-  -d '{ "historyOfKnockedUnconscious": true, "historyOfAlcoholOrDrugAbuse": true, "numberOfSexualPartners": 2 }'
+  -d '{
+        "historyOfBrokenBonesOrCuts":     false,
+        "historyOfKnockedUnconscious":    true,
+        "historyOfRunningAway":           false,
+        "historyOfAlcoholOrDrugAbuse":    true,
+        "everInvolvedWithLawEnforcement": false,
+        "historyOfSTD":                   false,
+        "numberOfSexualPartners":         2
+      }'
+
+# -> { "atRisk": true, "atRiskOriginalScreen": true, ... }
+#    atRisk is the modified tool (what Harper acts on);
+#    atRiskOriginalScreen is the original screen, for comparison.
 ```
 
 ### Greenbaum: two scorings, one call
@@ -104,14 +121,36 @@ mvn test       # unit only
 
 The endpoint/JSON shapes in the decision tests follow Kogito's default DMN mapping (context keyed by input-data / decision names). Confirm them against the generated OpenAPI (`/q/openapi`) on first run and adjust if your Kogito version differs. Grow the suite with a `*DecisionTest` per DMN and a process test per executable BPMN (asserting the draft → finalize → signal path).
 
-## Known adjustments (scaffold → clean build)
+## Model conventions
 
-These models were reconstructed for design and interoperability, not yet hardened for one engine's strict code generation. Expect a short iteration to a green build:
+The items that once blocked a clean Kogito build are resolved — `mvn verify` is green. What
+remains is the set of conventions the models follow; keep to them when adding processes or
+decisions.
 
-- **Executable flags.** Only `isExecutable="true"` processes generate endpoints (Nurse, Practitioner). The top-level collaboration and Registrar are `isExecutable="false"` (descriptive); make them executable or keep them out of codegen as needed.
-- **Gateway conditions.** Sequence-flow conditions (e.g., `shouldScreen == true`) may need an explicit expression language for Kogito to evaluate them.
-- **DMN business-rule binding.** The business-rule tasks reference DMN by `namespace` / `model` / `decision`; confirm Kogito resolves them (or expose DMN **Decision Services** and bind to those).
-- **DMN model names with spaces** ("Screening Tool of Greenbaum", "Alarm Signs for Human Trafficking") produce awkward endpoint paths — consider renaming the DMN `name` attributes.
-- **Signals & message/data.** The `Referral drafted` / `Suspect sex trafficking` signals and typed process data may need item definitions or a small Java data model to round-trip cleanly.
+**Executable vs design-only.** Only `isExecutable="true"` processes reach codegen:
 
-Work through these against `mvn quarkus:dev` output; each is a small, local fix.
+| Process | File | Executable |
+|---|---|---|
+| `Process_EDEncounter` | `ed-encounter.bpmn` | yes — the orchestrator, one instance per visit |
+| `Process_Registrar_Sub` | `registrar.bpmn` | yes |
+| `Process_Nurse_Sub` | `nurse.bpmn` | yes |
+| `Process_LIP_Sub` | `practitioner.bpmn` | yes |
+| the five pools | `ed-trafficking-detection.bpmn` | no — design artifact |
+
+A BPMN collaboration makes each pool a separate process, so it cannot produce one end-to-end
+instance. It documents the pathway; the orchestrator executes it.
+
+**DMN names are space-free.** Model names map straight to endpoint paths — `GreenbaumScreen`
+→ `POST /GreenbaumScreen`. Do not reintroduce spaces.
+
+**Every DMN input is required.** Kogito raises a DMN error for an input absent from the request
+context, and the generated resource returns **HTTP 500** — not a validation message. Send every
+field on every call, with explicit `false` for unanswered booleans. There is no partial-screen
+support; adding it means defaulting at the API boundary or returning a 400 instead.
+
+**Signals and typed data.** `Referral drafted` and `Suspect sex trafficking` are declared with
+item definitions so they round-trip through codegen. New signals need the same.
+
+**No Docker required.** `quarkus.kogito.devservices.enabled=false` stops Kogito auto-starting a
+Data Index container. The process endpoints work without it; Data Index only adds richer
+querying. Set it to `true` (with Docker running) if you want that.
