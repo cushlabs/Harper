@@ -29,6 +29,10 @@ HARPER_API=http://my-host:8080 npm run dev
 ## What it does
 
 1. **Select a patient** and start an **ED Encounter** — a real `Process_EDEncounter` instance in the engine.
+   > **Known gap.** The engine's clinical steps are BPMN user tasks, so the instance pauses at the first
+   > one and waits. This UI does not complete user tasks yet — it drives the decisions by calling the DMN
+   > endpoints directly (steps 2–3), so the screening flow below works, but the encounter instance stays
+   > parked rather than running to completion. Wiring the task endpoints is the next piece of work.
 2. **Nurse:** run **ED Prescreen**; if screening is indicated, complete and score the **Greenbaum** screen.
 3. **Practitioner:** record **Alarm Signs** and evaluate.
 4. A positive screen or suspicious findings raises a **draft referral**, which a practitioner must

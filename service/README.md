@@ -28,7 +28,8 @@ This module serves the **API only** — there is no UI on 8080. For the clinical
 
 Kogito generates one REST resource per **executable** process and one per **DMN model**:
 
-- **`Process_EDEncounter`** — the orchestrator. Start one instance per ED encounter; it calls Registrar → Nurse → (conditionally) Practitioner and is the end-to-end record for reporting. Use the process-management endpoints (and Kogito Data Index, if deployed) to query instances, stage timings, and outcomes.
+- **`Process_EDEncounter`** — the orchestrator. Start one instance per ED encounter; it calls Registrar → Nurse → (conditionally) Practitioner. `GET /Process_EDEncounter` and `GET /Process_EDEncounter/{id}` query instances; Kogito Data Index adds richer querying if deployed. (The `kogito-addons-quarkus-process-management` addon is deliberately **not** a dependency — it exposes unauthenticated abort/retrigger endpoints. Add it back consciously if you want them.)
+- **User tasks.** The clinical steps are user tasks, so an instance **pauses** until each is completed with data: `TriageDataCollection` (3 ED Prescreen inputs), `GreenbaumScreenCollection` (7 Greenbaum items), `AlarmSignsCollection` (7 alarm signs). Their answers populate the process variables the business-rule tasks read. Starting an encounter returns a waiting instance, not a result — check Swagger UI for the generated task paths and payloads.
 - **`Process_Registrar_Sub`, `Process_Nurse_Sub`, `Process_LIP_Sub`** — the sub-processes it invokes.
 - **`EDPrescreen`, `GreenbaumScreen`, `AlarmSigns`** — the DMN decision endpoints.
 

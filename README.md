@@ -39,7 +39,8 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 
 ## The models
 
-- **`ed-encounter.bpmn` is the executable orchestrator**: one process instance per ED encounter, calling Registrar → Nurse → (when a draft referral is raised) Practitioner. That instance is the end-to-end reporting spine — status, stage timings, and outcome for a visit.
+- **`ed-encounter.bpmn` is the executable orchestrator**: one process instance per ED encounter, calling Registrar → Nurse → (when a draft referral is raised) Practitioner. It is designed to be the end-to-end reporting spine — status, stage timings, and outcome for a visit.
+- **The pathway is asynchronous.** The clinical steps are BPMN **user tasks**: an instance runs until it reaches one, then waits for a human to complete it with data. "Nurse Triage Data Collection" supplies the three ED Prescreen inputs; "Nurse collects information" supplies the seven Greenbaum items; "Collect Patient Data" supplies the seven alarm signs. Those answers land in process variables that the business-rule tasks read. Starting an encounter therefore returns a *waiting* instance, not a finished result. **The UI does not yet complete these tasks** — it calls the DMN endpoints directly instead, so an encounter instance currently parks at the first user task. Wiring that up is the next piece of work.
 - **`ed-trafficking-detection.bpmn`** documents the same pathway as a five-pool collaboration. It is a design artifact and is deliberately **not** compiled: in BPMN each pool is a separate process, so a collaboration cannot yield a single end-to-end instance.
 - **Signals:** the Nurse's at-risk decision throws `Referral drafted` (which starts the Practitioner swimlane); the Practitioner's *Finalize* step throws `Suspect sex trafficking` (which starts the Social Worker).
 - **DMN:** *ED Prescreen* (decision table), *Greenbaum* (≥ 2 of six items), *Alarm Signs* (count + threshold). Business-rule tasks bind to these via Kogito's `implementation="http://www.jboss.org/drools/dmn"`.
@@ -94,7 +95,7 @@ The BPMN and DMN files in `models/` define **all** process and decision logic. `
 
 ## Roadmap
 
-The [`service/`](service/) module runs these BPMN/DMN files on Kogito (Kubernetes-ready via `quarkus-kubernetes`) and builds green. **The FHIR, CDS Hooks and SMART on FHIR layers are not built yet** — the models call placeholder script tasks, not a real FHIR server. Remaining work: replace those with real FHIR service tasks, add SMART on FHIR / CDS Hooks endpoints, back it with a HAPI FHIR server, and add a partial-screen path so an incomplete screen does not fail (see [`service/README.md`](service/README.md)).
+The [`service/`](service/) module runs these BPMN/DMN files on Kogito (Kubernetes-ready via `quarkus-kubernetes`) and builds green. **The FHIR, CDS Hooks and SMART on FHIR layers are not built yet** — the models call placeholder script tasks, not a real FHIR server. Remaining work: wire the UI to fetch and complete the BPMN user tasks so an encounter runs end to end, replace the placeholder script tasks with real FHIR service tasks, add SMART on FHIR / CDS Hooks endpoints, back it with a HAPI FHIR server, and add a partial-screen path so an incomplete screen returns a validation error rather than an HTTP 500 (see [`service/README.md`](service/README.md)).
 
 ## Tests & CI
 
