@@ -3,14 +3,74 @@
   <bpmn:itemDefinition id="ItemBoolean" structureRef="java.lang.Boolean" />
   <bpmn:process id="Process_LIP_Sub" name="Licensed Independent Practitioner (sub-process)" isExecutable="true">
     <bpmn:documentation>Expanded Licensed Independent Practitioner sub-process. Alarm Signs for Human Trafficking is a Kogito DMN business-rule task. The &#x27;Refer to social work?&#x27; gateway is true when there are suspicious findings OR a draft referral already exists (raised by the Nurse). The practitioner then FINALIZES the draft referral; only this step throws the single &#x27;Suspect sex trafficking&#x27; signal that starts the Social Worker pool. The process then continues to Diagnosis, care, and discharge. A referral is a draft proposal until finalized.</bpmn:documentation>
+    <bpmn:property id="Prop_signsOfPhysicalAbuse" name="signsOfPhysicalAbuse" itemSubjectRef="ItemBoolean" />
+    <bpmn:property id="Prop_signsOfDrugAbuse" name="signsOfDrugAbuse" itemSubjectRef="ItemBoolean" />
+    <bpmn:property id="Prop_signsOfAnogenitalTrauma" name="signsOfAnogenitalTrauma" itemSubjectRef="ItemBoolean" />
+    <bpmn:property id="Prop_signsOfVenerealDisease" name="signsOfVenerealDisease" itemSubjectRef="ItemBoolean" />
+    <bpmn:property id="Prop_evidenceOfAbuseInOutsideRecords" name="evidenceOfAbuseInOutsideRecords" itemSubjectRef="ItemBoolean" />
+    <bpmn:property id="Prop_suspiciousBehaviorInAccompanyingAdult" name="suspiciousBehaviorInAccompanyingAdult" itemSubjectRef="ItemBoolean" />
+    <bpmn:property id="Prop_suspiciousBehaviorOfPatient" name="suspiciousBehaviorOfPatient" itemSubjectRef="ItemBoolean" />
     <bpmn:property id="Prop_suspiciousFindings" name="suspiciousFindings" itemSubjectRef="ItemBoolean" />
     <bpmn:property id="Prop_draftReferralExists" name="draftReferralExists" itemSubjectRef="ItemBoolean" />
     <bpmn:startEvent id="StartEvent_LIP" name="">
       <bpmn:outgoing>lf1</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:userTask id="UserTask_CollectPatientData" name="Collect Patient Data">
+      <bpmn:documentation>Practitioner records the examination findings the Alarm Signs decision needs. Completing this task supplies all seven signs; every field is required, because the DMN raises an error for an input missing from its context.</bpmn:documentation>
       <bpmn:incoming>lf1</bpmn:incoming>
       <bpmn:outgoing>lf2</bpmn:outgoing>
+      <bpmn:ioSpecification>
+        <bpmn:dataInput id="UserTask_CollectPatientData_TaskName" name="TaskName" />
+        <bpmn:dataOutput id="UserTask_CollectPatientData_do_signsOfPhysicalAbuse" name="signsOfPhysicalAbuse" />
+        <bpmn:dataOutput id="UserTask_CollectPatientData_do_signsOfDrugAbuse" name="signsOfDrugAbuse" />
+        <bpmn:dataOutput id="UserTask_CollectPatientData_do_signsOfAnogenitalTrauma" name="signsOfAnogenitalTrauma" />
+        <bpmn:dataOutput id="UserTask_CollectPatientData_do_signsOfVenerealDisease" name="signsOfVenerealDisease" />
+        <bpmn:dataOutput id="UserTask_CollectPatientData_do_evidenceOfAbuseInOutsideRecords" name="evidenceOfAbuseInOutsideRecords" />
+        <bpmn:dataOutput id="UserTask_CollectPatientData_do_suspiciousBehaviorInAccompanyingAdult" name="suspiciousBehaviorInAccompanyingAdult" />
+        <bpmn:dataOutput id="UserTask_CollectPatientData_do_suspiciousBehaviorOfPatient" name="suspiciousBehaviorOfPatient" />
+        <bpmn:inputSet><bpmn:dataInputRefs>UserTask_CollectPatientData_TaskName</bpmn:dataInputRefs></bpmn:inputSet>
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>UserTask_CollectPatientData_do_signsOfPhysicalAbuse</bpmn:dataOutputRefs>
+          <bpmn:dataOutputRefs>UserTask_CollectPatientData_do_signsOfDrugAbuse</bpmn:dataOutputRefs>
+          <bpmn:dataOutputRefs>UserTask_CollectPatientData_do_signsOfAnogenitalTrauma</bpmn:dataOutputRefs>
+          <bpmn:dataOutputRefs>UserTask_CollectPatientData_do_signsOfVenerealDisease</bpmn:dataOutputRefs>
+          <bpmn:dataOutputRefs>UserTask_CollectPatientData_do_evidenceOfAbuseInOutsideRecords</bpmn:dataOutputRefs>
+          <bpmn:dataOutputRefs>UserTask_CollectPatientData_do_suspiciousBehaviorInAccompanyingAdult</bpmn:dataOutputRefs>
+          <bpmn:dataOutputRefs>UserTask_CollectPatientData_do_suspiciousBehaviorOfPatient</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="UserTask_CollectPatientData_a_TaskName">
+        <bpmn:targetRef>UserTask_CollectPatientData_TaskName</bpmn:targetRef>
+        <bpmn:assignment><bpmn:from>AlarmSignsCollection</bpmn:from><bpmn:to>UserTask_CollectPatientData_TaskName</bpmn:to></bpmn:assignment>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="UserTask_CollectPatientData_doa_signsOfPhysicalAbuse">
+        <bpmn:sourceRef>UserTask_CollectPatientData_do_signsOfPhysicalAbuse</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_signsOfPhysicalAbuse</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="UserTask_CollectPatientData_doa_signsOfDrugAbuse">
+        <bpmn:sourceRef>UserTask_CollectPatientData_do_signsOfDrugAbuse</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_signsOfDrugAbuse</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="UserTask_CollectPatientData_doa_signsOfAnogenitalTrauma">
+        <bpmn:sourceRef>UserTask_CollectPatientData_do_signsOfAnogenitalTrauma</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_signsOfAnogenitalTrauma</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="UserTask_CollectPatientData_doa_signsOfVenerealDisease">
+        <bpmn:sourceRef>UserTask_CollectPatientData_do_signsOfVenerealDisease</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_signsOfVenerealDisease</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="UserTask_CollectPatientData_doa_evidenceOfAbuseInOutsideRecords">
+        <bpmn:sourceRef>UserTask_CollectPatientData_do_evidenceOfAbuseInOutsideRecords</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_evidenceOfAbuseInOutsideRecords</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="UserTask_CollectPatientData_doa_suspiciousBehaviorInAccompanyingAdult">
+        <bpmn:sourceRef>UserTask_CollectPatientData_do_suspiciousBehaviorInAccompanyingAdult</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_suspiciousBehaviorInAccompanyingAdult</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="UserTask_CollectPatientData_doa_suspiciousBehaviorOfPatient">
+        <bpmn:sourceRef>UserTask_CollectPatientData_do_suspiciousBehaviorOfPatient</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_suspiciousBehaviorOfPatient</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
     </bpmn:userTask>
     <bpmn:businessRuleTask id="BusinessRuleTask_AlarmSigns" name="Alarm Signs for Human Trafficking" implementation="http://www.jboss.org/drools/dmn">
       <bpmn:documentation>Kogito DMN call. namespace=http://harper.health/dmn/alarm-signs, model=&#x27;Alarm Signs for Human Trafficking&#x27;, decision=&#x27;Suspicious findings for human trafficking?&#x27; (&gt;= configured threshold, default 2). Output: suspiciousFindings.</bpmn:documentation>
@@ -55,31 +115,31 @@
         <bpmn:assignment><bpmn:from>suspiciousFindings</bpmn:from><bpmn:to>BusinessRuleTask_AlarmSigns_decision</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="la1">
-        <bpmn:sourceRef>Data_PhysicalAbuse</bpmn:sourceRef>
+        <bpmn:sourceRef>Prop_signsOfPhysicalAbuse</bpmn:sourceRef>
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_signsOfPhysicalAbuse</bpmn:targetRef>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="la2">
-        <bpmn:sourceRef>Data_DrugAbuse</bpmn:sourceRef>
+        <bpmn:sourceRef>Prop_signsOfDrugAbuse</bpmn:sourceRef>
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_signsOfDrugAbuse</bpmn:targetRef>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="la3">
-        <bpmn:sourceRef>Data_AnogenitalTrauma</bpmn:sourceRef>
+        <bpmn:sourceRef>Prop_signsOfAnogenitalTrauma</bpmn:sourceRef>
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_signsOfAnogenitalTrauma</bpmn:targetRef>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="la4">
-        <bpmn:sourceRef>Data_VenerealDisease</bpmn:sourceRef>
+        <bpmn:sourceRef>Prop_signsOfVenerealDisease</bpmn:sourceRef>
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_signsOfVenerealDisease</bpmn:targetRef>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="la5">
-        <bpmn:sourceRef>Data_EvidenceOutside</bpmn:sourceRef>
+        <bpmn:sourceRef>Prop_evidenceOfAbuseInOutsideRecords</bpmn:sourceRef>
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_evidenceOfAbuseInOutsideRecords</bpmn:targetRef>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="la6">
-        <bpmn:sourceRef>Data_SuspAccompany</bpmn:sourceRef>
+        <bpmn:sourceRef>Prop_suspiciousBehaviorInAccompanyingAdult</bpmn:sourceRef>
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_suspiciousBehaviorInAccompanyingAdult</bpmn:targetRef>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="la7">
-        <bpmn:sourceRef>Data_SuspPatient</bpmn:sourceRef>
+        <bpmn:sourceRef>Prop_suspiciousBehaviorOfPatient</bpmn:sourceRef>
         <bpmn:targetRef>BusinessRuleTask_AlarmSigns_di_suspiciousBehaviorOfPatient</bpmn:targetRef>
       </bpmn:dataInputAssociation>
       <bpmn:dataOutputAssociation id="BusinessRuleTask_AlarmSigns_doa">
@@ -134,20 +194,6 @@
     <bpmn:endEvent id="EndEvent_LIP" name="">
       <bpmn:incoming>lf11</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:dataObjectReference id="Data_PhysicalAbuse" name="Signs of physical abuse" dataObjectRef="Obj_Data_PhysicalAbuse" />
-    <bpmn:dataObject id="Obj_Data_PhysicalAbuse" />
-    <bpmn:dataObjectReference id="Data_DrugAbuse" name="Signs of drug abuse" dataObjectRef="Obj_Data_DrugAbuse" />
-    <bpmn:dataObject id="Obj_Data_DrugAbuse" />
-    <bpmn:dataObjectReference id="Data_AnogenitalTrauma" name="Signs of anogenital trauma" dataObjectRef="Obj_Data_AnogenitalTrauma" />
-    <bpmn:dataObject id="Obj_Data_AnogenitalTrauma" />
-    <bpmn:dataObjectReference id="Data_VenerealDisease" name="Signs of venereal disease" dataObjectRef="Obj_Data_VenerealDisease" />
-    <bpmn:dataObject id="Obj_Data_VenerealDisease" />
-    <bpmn:dataObjectReference id="Data_EvidenceOutside" name="Evidence of abuse in outside records" dataObjectRef="Obj_Data_EvidenceOutside" />
-    <bpmn:dataObject id="Obj_Data_EvidenceOutside" />
-    <bpmn:dataObjectReference id="Data_SuspAccompany" name="Suspicious behavior in accompanying adult" dataObjectRef="Obj_Data_SuspAccompany" />
-    <bpmn:dataObject id="Obj_Data_SuspAccompany" />
-    <bpmn:dataObjectReference id="Data_SuspPatient" name="Suspicious behavior of patient" dataObjectRef="Obj_Data_SuspPatient" />
-    <bpmn:dataObject id="Obj_Data_SuspPatient" />
     <bpmn:dataObjectReference id="Data_NumAlarmSigns" name="Number of alarm signs" dataObjectRef="Obj_Data_NumAlarmSigns" />
     <bpmn:dataObject id="Obj_Data_NumAlarmSigns" />
     <bpmn:dataObjectReference id="Data_SuspFindingsHT" name="Suspicious findings for human trafficking?" dataObjectRef="Obj_Data_SuspFindingsHT" />
@@ -209,27 +255,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_EndEvent_LIP" bpmnElement="EndEvent_LIP">
         <dc:Bounds x="1480" y="272" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Data_PhysicalAbuse" bpmnElement="Data_PhysicalAbuse">
-        <dc:Bounds x="460" y="250" width="36" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Data_DrugAbuse" bpmnElement="Data_DrugAbuse">
-        <dc:Bounds x="460" y="330" width="36" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Data_AnogenitalTrauma" bpmnElement="Data_AnogenitalTrauma">
-        <dc:Bounds x="460" y="410" width="36" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Data_VenerealDisease" bpmnElement="Data_VenerealDisease">
-        <dc:Bounds x="460" y="490" width="36" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Data_EvidenceOutside" bpmnElement="Data_EvidenceOutside">
-        <dc:Bounds x="460" y="570" width="36" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Data_SuspAccompany" bpmnElement="Data_SuspAccompany">
-        <dc:Bounds x="460" y="650" width="36" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Data_SuspPatient" bpmnElement="Data_SuspPatient">
-        <dc:Bounds x="460" y="730" width="36" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Data_NumAlarmSigns" bpmnElement="Data_NumAlarmSigns">
         <dc:Bounds x="380" y="20" width="36" height="50" />
