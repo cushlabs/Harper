@@ -5,7 +5,7 @@
  * against http://localhost:8080/q/swagger-ui
  *
  *   POST /EDPrescreen          { standingOrder, highRiskChiefComplaint, ageInYears } -> { shouldScreen, ... }
- *   POST /GreenbaumScreen      { six items + optional screenVariant }                                          -> { atRisk, ... }
+ *   POST /GreenbaumScreen      { all 7 items, all required }                                          -> { atRisk, ... }
  *   POST /AlarmSigns           { seven signs }                                        -> { numberOfAlarmSigns, suspiciousFindings, ... }
  *   POST /Process_EDEncounter  { encounterId }                                        -> { id, referralStatus, atRisk, ... }
  *   GET  /Process_EDEncounter                                                          -> [ instances ]

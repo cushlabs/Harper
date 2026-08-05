@@ -39,24 +39,27 @@ curl -X POST http://localhost:8080/<greenbaum-endpoint> \
   -d '{ "historyOfKnockedUnconscious": true, "historyOfAlcoholOrDrugAbuse": true, "numberOfSexualPartners": 2 }'
 ```
 
-### Greenbaum screen variants
+### Greenbaum: two scorings, one call
 
 The significant-trauma item is answered by two subquestions: **1a** broken bones or cuts needing
-stitches, and **1b** knocked unconscious. The original screen counts a yes to either as one
-positive. The multi-site evaluation also tested a **modified** tool that drops 1a and scores
-trauma on 1b alone.
+stitches, and **1b** knocked unconscious. The original screen counts a yes to either as one positive.
+The multi-site evaluation also tested a **modified** tool that drops 1a and scores 1b alone.
 
-Harper defaults to **modified** — it buys roughly 10 points of ED specificity at no cost to
-sensitivity. Send `screenVariant` to choose:
+`greenbaum.dmn` publishes both, returned together from a single POST:
 
-| `screenVariant` | Trauma item scores on | ED sensitivity | ED specificity |
+| Decision | Trauma scores on | ED sensitivity | ED specificity |
 |---|---|---|---|
-| *(omitted)* / `"modified"` | 1b only | 83.3% | **59.5%** |
-| `"original"` | 1a or 1b | 83.3% | 49.4% |
+| `atRisk` — **what Harper acts on** | 1b only | 83.3% | **59.5%** |
+| `atRiskOriginalScreen` — comparison | 1a or 1b | 83.3% | 49.4% |
 
 Figures from Greenbaum VJ et al., *J Adolesc Health* 2018 (n = 810, 16 sites); ED subgroup n = 91.
-`historyOfBrokenBonesOrCuts` is still accepted and stored under the modified tool — it just does
-not score — so switching variants does not require re-collecting data.
+The modified tool buys ~10 points of ED specificity at unchanged sensitivity, which is why
+`nurse.bpmn` binds `atRisk`.
+
+> **All seven inputs are required on every call**, including `historyOfBrokenBonesOrCuts` even though
+> the modified tool does not score it. Kogito raises a DMN error — surfacing as **HTTP 500**, not a
+> validation message — for any input missing from the request context. There is no partial-screen
+> support: send every field, using explicit `false` for unanswered items.
 
 ## Build & package
 

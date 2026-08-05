@@ -75,7 +75,7 @@
       <bpmn:outgoing>nf5</bpmn:outgoing>
     </bpmn:manualTask>
     <bpmn:businessRuleTask id="BusinessRuleTask_Greenbaum" name="Screening Tool of Greenbaum" implementation="http://www.jboss.org/drools/dmn">
-      <bpmn:documentation>Kogito DMN call. namespace=http://harper.health/dmn/greenbaum, model=&#x27;Screening Tool of Greenbaum&#x27;, decision=&#x27;Screening Tool of Greenbaum&#x27;. Positive when &gt;= 2 of six. Output: atRisk. Uses the MODIFIED variant (screenVariant=modified): trauma is scored on subquestion 1b (knocked unconscious) alone, dropping 1a (broken bones/cuts needing stitches), which raises ED specificity ~49.4% -&gt; ~59.5% at unchanged sensitivity.</bpmn:documentation>
+      <bpmn:documentation>Kogito DMN call. namespace=http://harper.health/dmn/greenbaum, model=&#x27;Screening Tool of Greenbaum&#x27;, decision=&#x27;Screening Tool of Greenbaum&#x27;. Positive when &gt;= 2 of six. Output: atRisk. Binds the atRisk decision, which scores the MODIFIED tool: trauma on subquestion 1b (knocked unconscious) alone, dropping 1a (broken bones/cuts needing stitches). That raises ED specificity ~49.4% -&gt; ~59.5% at unchanged sensitivity. The model also publishes atRiskOriginalScreen for comparison; this process does not act on it. All seven inputs are required on every call.</bpmn:documentation>
       <bpmn:incoming>nf5</bpmn:incoming>
       <bpmn:outgoing>nf6</bpmn:outgoing>
       <bpmn:ioSpecification>
@@ -84,7 +84,6 @@
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_decision" name="decision" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_historyOfBrokenBonesOrCuts" name="historyOfBrokenBonesOrCuts" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_historyOfKnockedUnconscious" name="historyOfKnockedUnconscious" />
-        <bpmn:dataInput id="BusinessRuleTask_Greenbaum_screenVariant" name="screenVariant" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_historyOfRunningAway" name="historyOfRunningAway" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_historyOfAlcoholOrDrugAbuse" name="historyOfAlcoholOrDrugAbuse" />
         <bpmn:dataInput id="BusinessRuleTask_Greenbaum_di_everInvolvedWithLawEnforcement" name="everInvolvedWithLawEnforcement" />
@@ -97,7 +96,6 @@
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_decision</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_historyOfBrokenBonesOrCuts</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_historyOfKnockedUnconscious</bpmn:dataInputRefs>
-          <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_screenVariant</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_historyOfRunningAway</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_historyOfAlcoholOrDrugAbuse</bpmn:dataInputRefs>
           <bpmn:dataInputRefs>BusinessRuleTask_Greenbaum_di_everInvolvedWithLawEnforcement</bpmn:dataInputRefs>
@@ -125,10 +123,6 @@
       <bpmn:dataInputAssociation id="na5b">
         <bpmn:sourceRef>Data_KnockedOut</bpmn:sourceRef>
         <bpmn:targetRef>BusinessRuleTask_Greenbaum_di_historyOfKnockedUnconscious</bpmn:targetRef>
-      </bpmn:dataInputAssociation>
-      <bpmn:dataInputAssociation id="BusinessRuleTask_Greenbaum_a_variant">
-        <bpmn:targetRef>BusinessRuleTask_Greenbaum_screenVariant</bpmn:targetRef>
-        <bpmn:assignment><bpmn:from>modified</bpmn:from><bpmn:to>BusinessRuleTask_Greenbaum_screenVariant</bpmn:to></bpmn:assignment>
       </bpmn:dataInputAssociation>
       <bpmn:dataInputAssociation id="na6">
         <bpmn:sourceRef>Data_RunAway</bpmn:sourceRef>

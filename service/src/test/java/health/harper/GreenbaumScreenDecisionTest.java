@@ -7,23 +7,30 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
 /**
- * Unit tests for the Greenbaum screen DMN decision (endpoint POST /GreenbaumScreen).
+ * Unit tests for the Greenbaum screen DMN (endpoint POST /GreenbaumScreen).
  *
  * Positive when >= 2 of the six items are positive (the partner item counts when > 5).
  *
  * The significant-trauma item is answered by two subquestions: 1a broken bones / cuts
- * needing stitches, and 1b knocked unconscious. Under the ORIGINAL screen a yes to
- * either counts once. Under the MODIFIED tool 1a is dropped and only 1b scores, which
- * the multi-site evaluation found raises ED specificity from ~49.4% to ~59.5% with no
- * loss of sensitivity. Harper defaults to modified; screenVariant selects.
+ * needing stitches, and 1b knocked unconscious. The model publishes both scorings:
+ *
+ *   atRisk                -- MODIFIED tool: 1b only. Harper acts on this.
+ *   atRiskOriginalScreen  -- ORIGINAL screen: 1a or 1b, counted once. Comparison only.
+ *
+ * The multi-site evaluation found the modified tool raises ED specificity from ~49.4%
+ * to ~59.5% with sensitivity unchanged, which is why the process binds atRisk.
+ *
+ * EVERY input is required on every call. Kogito raises a DMN error (HTTP 500) for an
+ * input missing from the request context, so the helper below always sends all seven.
  */
 @QuarkusTest
 class GreenbaumScreenDecisionTest {
 
     private static final String CT = "application/json";
-    private static final String DECISION = "atRisk";
+    private static final String MODIFIED = "atRisk";
+    private static final String ORIGINAL = "atRiskOriginalScreen";
 
-    /** All six items negative, partners 0, unless overridden. */
+    /** All six items negative and partners 0, unless overridden. Always complete. */
     private static String body(String... overrides) {
         StringBuilder sb = new StringBuilder("{")
             .append("\"historyOfBrokenBonesOrCuts\": false,")
@@ -37,98 +44,90 @@ class GreenbaumScreenDecisionTest {
         return sb.append("}").toString();
     }
 
-    private static void assertAtRisk(String json, boolean expected) {
+    private static void assertScreen(String json, String decision, boolean expected) {
         given().contentType(CT).body(json)
             .when().post("/GreenbaumScreen")
             .then().statusCode(200)
-            .body(DECISION, is(expected));
+            .body(decision, is(expected));
     }
 
-    // ---- cutoff behaviour ---------------------------------------------------
+    // ---- cutoff behaviour (modified tool = what Harper acts on) --------------
 
     @Test
     void twoOrMorePositive_isAtRisk() {
-        assertAtRisk(body("\"historyOfKnockedUnconscious\": true",
-                          "\"historyOfAlcoholOrDrugAbuse\": true"), true);
+        assertScreen(body("\"historyOfKnockedUnconscious\": true",
+                          "\"historyOfAlcoholOrDrugAbuse\": true"), MODIFIED, true);
     }
 
     @Test
     void singlePositive_isNotAtRisk() {
-        assertAtRisk(body("\"historyOfKnockedUnconscious\": true"), false);
+        assertScreen(body("\"historyOfKnockedUnconscious\": true"), MODIFIED, false);
     }
 
     @Test
     void nonePositive_isNotAtRisk() {
-        assertAtRisk(body(), false);
+        assertScreen(body(), MODIFIED, false);
     }
 
     // ---- partner item -------------------------------------------------------
 
     @Test
     void moreThanFivePartnersPlusOneItem_isAtRisk() {
-        assertAtRisk(body("\"historyOfKnockedUnconscious\": true",
-                          "\"numberOfSexualPartners\": 6"), true);
+        assertScreen(body("\"historyOfKnockedUnconscious\": true",
+                          "\"numberOfSexualPartners\": 6"), MODIFIED, true);
     }
 
     @Test
     void exactlyFivePartners_doesNotCount() {
-        assertAtRisk(body("\"historyOfKnockedUnconscious\": true",
-                          "\"numberOfSexualPartners\": 5"), false);
+        assertScreen(body("\"historyOfKnockedUnconscious\": true",
+                          "\"numberOfSexualPartners\": 5"), MODIFIED, false);
     }
 
-    // ---- variant: the 1a subquestion ---------------------------------------
+    // ---- the 1a subquestion: where the two variants diverge ------------------
 
-    /** Modified tool (the default): 1a is ignored, so 1a + one other item stays below cutoff. */
+    /** Modified tool ignores 1a, so 1a + one other item stays below the cutoff. */
     @Test
-    void modifiedVariant_brokenBonesDoesNotScore() {
-        assertAtRisk(body("\"historyOfBrokenBonesOrCuts\": true",
-                          "\"historyOfAlcoholOrDrugAbuse\": true"), false);
+    void modifiedTool_brokenBonesDoesNotScore() {
+        assertScreen(body("\"historyOfBrokenBonesOrCuts\": true",
+                          "\"historyOfAlcoholOrDrugAbuse\": true"), MODIFIED, false);
     }
 
     /** Same answers under the original screen: 1a scores, so the cutoff is met. */
     @Test
-    void originalVariant_brokenBonesScores() {
-        assertAtRisk(body("\"historyOfBrokenBonesOrCuts\": true",
-                          "\"historyOfAlcoholOrDrugAbuse\": true",
-                          "\"screenVariant\": \"original\""), true);
+    void originalScreen_brokenBonesScores() {
+        assertScreen(body("\"historyOfBrokenBonesOrCuts\": true",
+                          "\"historyOfAlcoholOrDrugAbuse\": true"), ORIGINAL, true);
     }
 
     /** Under the original screen 1a and 1b together still count once, not twice. */
     @Test
-    void originalVariant_bothSubquestionsCountOnce() {
-        assertAtRisk(body("\"historyOfBrokenBonesOrCuts\": true",
-                          "\"historyOfKnockedUnconscious\": true",
-                          "\"screenVariant\": \"original\""), false);
+    void originalScreen_bothSubquestionsCountOnce() {
+        assertScreen(body("\"historyOfBrokenBonesOrCuts\": true",
+                          "\"historyOfKnockedUnconscious\": true"), ORIGINAL, false);
     }
 
     /** 1b scores under both variants. */
     @Test
-    void modifiedVariant_knockedUnconsciousStillScores() {
-        assertAtRisk(body("\"historyOfKnockedUnconscious\": true",
-                          "\"historyOfRunningAway\": true"), true);
+    void modifiedTool_knockedUnconsciousStillScores() {
+        assertScreen(body("\"historyOfKnockedUnconscious\": true",
+                          "\"historyOfRunningAway\": true"), MODIFIED, true);
     }
 
-    // ---- defaulting and partial input --------------------------------------
-
-    /** Omitting screenVariant is treated as modified. */
+    /** Both decisions are returned from one call, and can legitimately disagree. */
     @Test
-    void omittedVariant_defaultsToModified() {
-        assertAtRisk("{\"historyOfBrokenBonesOrCuts\": true,"
-                   + "\"historyOfAlcoholOrDrugAbuse\": true}", false);
+    void bothDecisionsReturned_andMayDisagree() {
+        String json = body("\"historyOfBrokenBonesOrCuts\": true",
+                           "\"historyOfAlcoholOrDrugAbuse\": true");
+        assertScreen(json, MODIFIED, false);
+        assertScreen(json, ORIGINAL, true);
     }
 
-    /** An unrecognised variant falls back to modified rather than erroring. */
+    /** The modified tool can never fire where the original does not: it drops a contributor. */
     @Test
-    void unrecognisedVariant_defaultsToModified() {
-        assertAtRisk(body("\"historyOfBrokenBonesOrCuts\": true",
-                          "\"historyOfAlcoholOrDrugAbuse\": true",
-                          "\"screenVariant\": \"nonsense\""), false);
-    }
-
-    /** Unanswered items are absent rather than false; scoring must not blow up. */
-    @Test
-    void partiallyAnsweredScreen_scoresAnsweredItemsOnly() {
-        assertAtRisk("{\"historyOfKnockedUnconscious\": true,"
-                   + "\"historyOfRunningAway\": true}", true);
+    void modifiedNeverFiresWhereOriginalDoesNot() {
+        String json = body("\"historyOfKnockedUnconscious\": true",
+                           "\"historyOfRunningAway\": true");
+        assertScreen(json, MODIFIED, true);
+        assertScreen(json, ORIGINAL, true);
     }
 }
