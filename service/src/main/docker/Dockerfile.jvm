@@ -1,7 +1,11 @@
 # Build the app first:  ./mvnw package   (or: mvn package)
 # Then build the image:  docker build -f src/main/docker/Dockerfile.jvm -t harper/harper-service:0.1.0 .
 # (Or skip Docker entirely and use Jib:  mvn package -Dquarkus.container-image.build=true)
-FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
+#
+# ubi9 openjdk-17-runtime: the JRE-only variant, so no compiler or build tooling ships
+# in the runtime image. Pin the minor tag and let Dependabot move it; :latest would
+# make builds unreproducible.
+FROM registry.access.redhat.com/ubi9/openjdk-17-runtime:1.22
 
 ENV LANGUAGE='en_US:en'
 

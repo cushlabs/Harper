@@ -1,0 +1,50 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: [ bug ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste patient data into this issue** — no real encounters, identifiers, or
+        clinical notes, including inside logs and screenshots. Use synthetic data. If you can
+        only reproduce with real data, say so and stop here; the maintainer will arrange a
+        private channel. See [SECURITY.md](../blob/main/SECURITY.md).
+  - type: checkboxes
+    id: no-phi
+    attributes:
+      label: Confirmation
+      options:
+        - label: This report contains no real patient data, anywhere, including in attachments.
+          required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start the service with `mvn quarkus:dev`
+        2. POST to /GreenbaumScreen with { ... }
+        3. Observe ...
+    validations: { required: true }
+  - type: textarea
+    id: logs
+    attributes:
+      label: Server-side error
+      description: >
+        The stack trace from the service console, not just the browser status code — the
+        browser only shows that something failed, the server says what.
+      render: text
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: Harper commit, JDK, Maven, OS

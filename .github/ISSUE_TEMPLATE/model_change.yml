@@ -1,0 +1,43 @@
+name: Clinical or model change
+description: Propose a change to a screening rule, threshold, or process model
+labels: [ clinical, models ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For changes to the BPMN/DMN models — thresholds, cutoffs, scoring, or pathway
+        structure. These are clinical changes, so evidence matters more than implementation
+        detail. **No patient data.**
+  - type: checkboxes
+    id: no-phi
+    attributes:
+      label: Confirmation
+      options:
+        - label: This proposal contains no real patient data.
+          required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What should change
+    validations: { required: true }
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting evidence
+      description: Cite the literature. Note if the instrument's licensing terms are affected.
+    validations: { required: true }
+  - type: textarea
+    id: performance
+    attributes:
+      label: Effect on screen performance
+      description: >
+        Sensitivity, specificity, and the resulting referral load if known. Raising sensitivity
+        usually lowers specificity; roughly 40% of non-victims already screen positive at the
+        current cutoff.
+  - type: textarea
+    id: safety
+    attributes:
+      label: Safety considerations
+      description: >
+        Does this affect the draft-then-finalize rule, or the guarantee that the system never
+        contacts law enforcement on its own?

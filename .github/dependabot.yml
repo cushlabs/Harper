@@ -1,0 +1,40 @@
+version: 2
+updates:
+  # Java. The aggregator at / and the service module are scanned separately.
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [ dependencies, java ]
+
+  - package-ecosystem: maven
+    directory: /service
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [ dependencies, java ]
+    groups:
+      # Quarkus and KIE versions move together; separate PRs would not build.
+      quarkus-kie:
+        patterns:
+          - "io.quarkus*"
+          - "org.kie*"
+          - "org.jbpm*"
+          - "org.drools*"
+
+  # React/Vite front end.
+  - package-ecosystem: npm
+    directory: /ui
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [ dependencies, javascript ]
+
+  # Keeps the pinned action SHAs current. Without this, pinning freezes the
+  # workflow on code that stops receiving security fixes.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels: [ dependencies, ci ]

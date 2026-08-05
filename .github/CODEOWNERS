@@ -1,0 +1,12 @@
+# Default owner for everything.
+*                       @becush
+
+# Clinical and licensing content — changes here carry consequences beyond code.
+/models/                @becush
+/NOTICE                 @becush
+/LICENSE                @becush
+/SECURITY.md            @becush
+
+# Supply chain.
+/.github/workflows/     @becush
+/.github/dependabot.yml @becush

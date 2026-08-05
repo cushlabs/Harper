@@ -1,0 +1,14 @@
+# Keep build context small and keep local state out of images.
+.git
+.github
+archive
+docs
+models
+ui/node_modules
+ui/dist
+**/target/*
+!service/target/quarkus-app
+**/.venv
+**/__pycache__
+**/.DS_Store
+*.md

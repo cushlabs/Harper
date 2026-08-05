@@ -17,6 +17,9 @@ node_modules/
 dist/
 .vite/
 
+# Scratch
+*.tmp
+
 # OS / editor
 .DS_Store
 Thumbs.db
