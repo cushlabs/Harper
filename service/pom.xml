@@ -41,15 +41,19 @@
 
   <dependencies>
     <!-- BPMN processes + DMN decisions, each auto-exposed as REST.
-         Under Apache KIE 10.x this single artifact replaces the old
-         kogito-quarkus-processes + kogito-quarkus-decisions pair: it bundles
-         org.jbpm:jbpm-quarkus (BPMN) with org.drools:drools-quarkus-decisions (DMN).
-         To slim it down once the build is green, depend on those two directly
-         instead — the bundle also pulls in drools-quarkus-rules and
-         kie-quarkus-predictions, which Harper does not use. -->
+         These two replace the pre-Apache kogito-quarkus-processes and
+         kogito-quarkus-decisions. Declared directly rather than via the
+         jbpm-with-drools-quarkus bundle, which would also drag in
+         drools-quarkus-rules and kie-quarkus-predictions: Harper writes no DRL
+         rules and runs no PMML predictions, so both are dead weight on the
+         dependency surface. -->
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-with-drools-quarkus</artifactId>
+      <artifactId>jbpm-quarkus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-quarkus-decisions</artifactId>
     </dependency>
 
     <!-- REST + JSON (generated Kogito endpoints are served here).
