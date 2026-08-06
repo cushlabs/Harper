@@ -36,7 +36,7 @@ they might.
 
 ## Enforcement
 
-Report unacceptable behaviour to the maintainers.
+Report unacceptable behaviour to the maintainer listed in [CODEOWNERS](.github/CODEOWNERS).
 All complaints will be reviewed and investigated promptly and fairly, and the reporter's
 privacy and security will be respected.
 
