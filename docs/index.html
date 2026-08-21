@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Target-state reference architecture for Project Harper: real-time detection of child sex trafficking during an emergency-department visit, built on FHIR R4 / US Core, CDS Hooks, SMART on FHIR, BPMN 2.0 and DMN 1.3, running on Kubernetes. Open-source and licence-free to adopt.">
+<meta name="author" content="Project Harper">
+<link rel="canonical" href="https://cushlabs.github.io/Harper/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Project Harper">
+<meta property="og:url" content="https://cushlabs.github.io/Harper/">
+<meta property="og:title" content="Harper Reference Architecture">
+<meta property="og:description" content="Target-state reference architecture for Project Harper: real-time detection of child sex trafficking during an emergency-department visit, built on FHIR R4 / US Core, CDS Hooks, SMART on FHIR, BPMN 2.0 and DMN 1.3, running on Kubernetes. Open-source and licence-free to adopt.">
+<meta property="og:image" content="https://cushlabs.github.io/Harper/social-preview.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Project Harper Reference Architecture — a layered stack from the host EHR through SMART on FHIR apps to a Kogito process and decision service and a HAPI FHIR data platform, on Kubernetes.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Harper Reference Architecture">
+<meta name="twitter:description" content="Target-state reference architecture for Project Harper: real-time detection of child sex trafficking during an emergency-department visit, built on FHIR R4 / US Core, CDS Hooks, SMART on FHIR, BPMN 2.0 and DMN 1.3, running on Kubernetes. Open-source and licence-free to adopt.">
+<meta name="twitter:image" content="https://cushlabs.github.io/Harper/social-preview.png">
+
+<!--
+  Project Harper - Reference Architecture
+  https://github.com/cushlabs/Harper
+
+  Target state per use-case specification v1.2, section 10. Published as the
+  project's GitHub Pages site from docs/index.html.
+
+  Self-contained: no build step, no dependencies, no JavaScript. Edit this file
+  and the site updates. Web fonts load from Google Fonts when online; the page
+  degrades to system fallbacks without layout change.
+
+  Diagrams are hand-authored inline SVG themed through CSS custom properties,
+  so they follow the reader's light/dark preference. Restyle the whole document
+  by editing the tokens in the :root blocks below.
+
+  This describes the TARGET state. The FHIR, CDS Hooks and SMART on FHIR layers
+  drawn here are specified, not yet built - see the repository README roadmap.
+  Synthetic data only; not for clinical use.
+-->
+<title>Harper Reference Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400..600&display=swap">
+
+<style>
+/* ─────────────────────────────────────────────────────────────
+   Tokens — light is the base; dark redefines tokens only.
+   ───────────────────────────────────────────────────────────── */
+:root{
+  --paper:#EDF2F3;
+  --surface:#FBFDFD;
+  --surface-2:#E2EAEC;
+  --ink:#0D1C23;
+  --ink-2:#3B5158;
+  --ink-3:#6D858C;
+  --rule:#C6D3D6;
+  --rule-2:#9EB2B7;
+  --accent:#0B6975;
+  --accent-2:#0E8391;
+  --accent-soft:#DBEBED;
+  --signal:#A62E4A;
+  --signal-soft:#F5DEE3;
+  --shadow:0 1px 2px rgba(13,28,35,.05), 0 10px 28px -16px rgba(13,28,35,.22);
+  --diagram-bg:#FBFDFD;
+
+  --f-display:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1418;
+    --surface:#0F1E24;
+    --surface-2:#16292F;
+    --ink:#E3EDEF;
+    --ink-2:#A8BFC5;
+    --ink-3:#7A949B;
+    --rule:#20353C;
+    --rule-2:#375760;
+    --accent:#54C5D1;
+    --accent-2:#7FDBE4;
+    --accent-soft:#0E3038;
+    --signal:#F08AA0;
+    --signal-soft:#3A1B25;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px -18px rgba(0,0,0,.85);
+    --diagram-bg:#0F1E24;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1418;
+  --surface:#0F1E24;
+  --surface-2:#16292F;
+  --ink:#E3EDEF;
+  --ink-2:#A8BFC5;
+  --ink-3:#7A949B;
+  --rule:#20353C;
+  --rule-2:#375760;
+  --accent:#54C5D1;
+  --accent-2:#7FDBE4;
+  --accent-soft:#0E3038;
+  --signal:#F08AA0;
+  --signal-soft:#3A1B25;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 12px 32px -18px rgba(0,0,0,.85);
+  --diagram-bg:#0F1E24;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+a{color:var(--accent);text-underline-offset:2px;text-decoration-thickness:from-font}
+a:hover{color:var(--accent-2)}
+
+/* ── Shell ─────────────────────────────────────────────────── */
+.wrap{max-width:1400px;margin-inline:auto;padding-inline:clamp(20px,3.6vw,52px)}
+
+.layout{display:grid;grid-template-columns:1fr;gap:0}
+@media (min-width:1140px){
+  .layout{grid-template-columns:178px minmax(0,1fr);gap:44px;align-items:start}
+}
+
+/* ── Repository bar ────────────────────────────────────────── */
+.topbar{background:var(--surface-2);border-bottom:1px solid var(--rule)}
+.topbar .wrap{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:20px;flex-wrap:wrap;padding-block:9px;
+}
+.topbar a{text-decoration:none}
+.topbar .mark{
+  font-family:var(--f-mono);font-size:13px;color:var(--ink);
+  letter-spacing:-.01em;white-space:nowrap;
+}
+.topbar .mark span{color:var(--ink-3);padding-inline:1px}
+.topbar .mark:hover{color:var(--accent)}
+.topbar .links{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.topbar .links a{
+  font-family:var(--f-display);font-size:12px;letter-spacing:.09em;text-transform:uppercase;
+  font-variation-settings:"wdth" 88,"wght" 600;color:var(--ink-2);white-space:nowrap;
+}
+.topbar .links a:hover{color:var(--accent)}
+.topbar .links a.gh{color:var(--accent)}
+
+/* ── Masthead ──────────────────────────────────────────────── */
+.masthead{border-bottom:1px solid var(--rule);background:var(--surface)}
+.masthead .wrap{padding-block:clamp(38px,6vw,72px) clamp(30px,4vw,44px)}
+
+.eyebrow{
+  font-family:var(--f-display);
+  font-variation-settings:"wdth" 88,"wght" 600;
+  font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 22px;max-width:none;
+  display:flex;align-items:center;gap:12px;flex-wrap:nowrap;
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--rule);min-width:24px}
+
+h1{
+  font-family:var(--f-display);
+  font-variation-settings:"wdth" 112,"wght" 700;
+  font-size:clamp(38px,6.2vw,68px);
+  line-height:1.02;letter-spacing:-.022em;
+  margin:0 0 20px;text-wrap:balance;max-width:16ch;
+}
+.deck{
+  font-size:clamp(18px,2.2vw,21px);line-height:1.5;color:var(--ink-2);
+  max-width:62ch;margin:0 0 30px;
+}
+.deck strong{color:var(--ink);font-weight:600}
+
+.meta{
+  display:flex;flex-wrap:wrap;gap:0;
+  border-top:1px solid var(--rule);
+  font-family:var(--f-display);
+}
+.meta div{
+  padding:14px 26px 14px 0;margin-right:26px;
+  border-right:1px solid var(--rule);
+}
+.meta div:last-child{border-right:0;margin-right:0;padding-right:0}
+.meta dt{
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);font-variation-settings:"wdth" 88,"wght" 600;margin:0 0 4px;
+}
+.meta dd{margin:0;font-size:14px;font-variation-settings:"wght" 500;color:var(--ink)}
+
+/* ── Advisory bar ──────────────────────────────────────────── */
+.advisory{
+  background:var(--signal-soft);
+  border-bottom:1px solid var(--rule);
+}
+.advisory .wrap{
+  padding-block:12px;
+  display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;
+  font-family:var(--f-display);font-size:13.5px;color:var(--ink);
+}
+.advisory b{
+  font-variation-settings:"wdth" 88,"wght" 700;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);
+  white-space:nowrap;
+}
+
+/* ── Section index ─────────────────────────────────────────── */
+.index{display:none}
+@media (min-width:1140px){
+  .index{
+    display:block;position:sticky;top:32px;
+    padding-top:56px;
+    font-family:var(--f-display);
+  }
+}
+.index h2{
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+  font-variation-settings:"wdth" 88,"wght" 600;margin:0 0 14px;
+}
+.index ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.index a{
+  display:grid;grid-template-columns:22px 1fr;gap:8px;
+  padding:6px 0;font-size:13px;line-height:1.3;
+  color:var(--ink-2);text-decoration:none;
+  border-top:1px solid transparent;
+}
+.index a:hover{color:var(--accent)}
+.index a span{
+  font-variant-numeric:tabular-nums;color:var(--ink-3);
+  font-size:11.5px;font-variation-settings:"wght" 500;padding-top:1px;
+}
+
+/* ── Content ───────────────────────────────────────────────── */
+main{padding-block:56px 0;min-width:0}
+section{
+  padding-block:0 clamp(46px,6vw,74px);
+  scroll-margin-top:24px;
+}
+section + section{border-top:1px solid var(--rule);padding-top:clamp(40px,5vw,58px)}
+
+h2{
+  font-family:var(--f-display);
+  font-variation-settings:"wdth" 108,"wght" 700;
+  font-size:clamp(25px,3.4vw,34px);line-height:1.12;letter-spacing:-.014em;
+  margin:0 0 8px;text-wrap:balance;
+  display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline;
+}
+h2 .num{
+  font-size:.52em;color:var(--accent);
+  font-variation-settings:"wdth" 88,"wght" 600;
+  font-variant-numeric:tabular-nums;letter-spacing:0;
+}
+.srcref{
+  font-family:var(--f-display);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);font-variation-settings:"wdth" 88,"wght" 500;
+  margin:0 0 26px;
+}
+h3{
+  font-family:var(--f-display);
+  font-variation-settings:"wdth" 100,"wght" 650;
+  font-size:17.5px;line-height:1.3;letter-spacing:-.005em;
+  margin:38px 0 12px;color:var(--ink);
+}
+p{margin:0 0 17px;max-width:68ch}
+.lede{font-size:19px;line-height:1.55;color:var(--ink-2);max-width:64ch}
+strong{font-weight:600}
+code{
+  font-family:var(--f-mono);font-size:.845em;
+  background:var(--surface-2);color:var(--ink);
+  padding:.08em .34em;border-radius:2px;
+}
+
+ul.plain{margin:0 0 18px;padding:0 0 0 1.1em;max-width:68ch}
+ul.plain li{margin-bottom:9px}
+
+/* ── Principles ────────────────────────────────────────────── */
+.principles{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));
+  gap:1px;background:var(--rule);
+  border:1px solid var(--rule);margin-top:26px;
+}
+.principles div{background:var(--surface);padding:20px 22px 22px}
+.principles dt{
+  font-family:var(--f-display);font-variation-settings:"wdth" 100,"wght" 650;
+  font-size:14.5px;margin:0 0 7px;color:var(--ink);
+}
+.principles dd{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink-2)}
+
+/* ── Figures ───────────────────────────────────────────────── */
+figure{
+  margin:32px 0 0;
+  border:1px solid var(--rule);
+  background:var(--diagram-bg);
+  box-shadow:var(--shadow);
+}
+.figbody{overflow-x:auto;padding:24px}
+figure svg{display:block;width:100%;min-width:700px;height:auto}
+figure svg.wide{min-width:980px}
+figure svg.midwide{min-width:860px}
+figcaption{
+  border-top:1px solid var(--rule);
+  padding:14px 22px;
+  font-family:var(--f-display);font-size:13.5px;line-height:1.5;
+  color:var(--ink-2);background:var(--surface-2);
+}
+figcaption b{
+  font-variation-settings:"wdth" 88,"wght" 700;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  display:block;margin-bottom:4px;
+}
+
+.legend{
+  display:flex;flex-wrap:wrap;gap:8px 22px;
+  padding:13px 22px;border-top:1px solid var(--rule);
+  font-family:var(--f-display);font-size:12px;color:var(--ink-2);
+}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.key{width:19px;height:12px;border:1.4px solid var(--rule-2);background:var(--surface);flex:none}
+.key.k-harper{border-color:var(--accent);background:var(--accent-soft)}
+.key.k-ext{border-style:dashed;border-color:var(--rule-2)}
+.key.k-human{border-color:var(--signal);background:var(--signal-soft)}
+.key.k-sig{width:13px;height:13px;border-radius:50%;border-color:var(--signal)}
+
+/* ── SVG classes ───────────────────────────────────────────── */
+svg text{font-family:var(--f-display);font-variation-settings:"wdth" 92}
+.t-node{font-size:12.5px;font-variation-settings:"wdth" 96,"wght" 650;fill:var(--ink)}
+.t-sub{font-size:10.5px;font-variation-settings:"wdth" 92,"wght" 450;fill:var(--ink-2)}
+.t-chip{font-size:10px;font-variation-settings:"wdth" 92,"wght" 600;fill:var(--ink)}
+.t-chip-sub{font-size:9.5px;font-variation-settings:"wdth" 90,"wght" 450;fill:var(--ink-2)}
+.t-edge{font-size:10.5px;font-variation-settings:"wdth" 90,"wght" 550;fill:var(--ink-2)}
+.t-edge-em{font-size:11px;font-variation-settings:"wdth" 90,"wght" 700;fill:var(--accent)}
+.t-band{font-size:10px;font-variation-settings:"wdth" 86,"wght" 700;fill:var(--ink-3);letter-spacing:.13em}
+.t-lane{font-size:11px;font-variation-settings:"wdth" 86,"wght" 700;fill:var(--ink-2);letter-spacing:.1em}
+.t-col{font-size:9.5px;font-variation-settings:"wdth" 86,"wght" 700;fill:var(--ink-3);letter-spacing:.11em}
+.t-sig{font-size:10px;font-variation-settings:"wdth" 90,"wght" 700;fill:var(--signal)}
+.t-mono{font-family:var(--f-mono);font-size:9.5px;fill:var(--ink-2)}
+.t-mono-h{font-family:var(--f-display);font-size:9.5px;font-variation-settings:"wdth" 86,"wght" 700;fill:var(--ink-3);letter-spacing:.11em}
+
+.box{fill:var(--surface);stroke:var(--rule-2);stroke-width:1.3}
+.box-harper{fill:var(--surface);stroke:var(--accent);stroke-width:1.6}
+.box-core{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8}
+.box-ext{fill:none;stroke:var(--rule-2);stroke-width:1.3;stroke-dasharray:6 4}
+.box-human{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.8}
+.chip{fill:var(--surface);stroke:var(--rule);stroke-width:1}
+.chip-core{fill:var(--surface);stroke:var(--accent);stroke-width:1;opacity:.95}
+.lane{fill:none;stroke:var(--rule);stroke-width:1}
+.lane-fill{fill:var(--surface-2);opacity:.42}
+.edge{fill:none;stroke:var(--rule-2);stroke-width:1.4}
+.edge-em{fill:none;stroke:var(--accent);stroke-width:1.8}
+.edge-sig{fill:none;stroke:var(--signal);stroke-width:1.8}
+.edge-dash{fill:none;stroke:var(--rule-2);stroke-width:1.3;stroke-dasharray:5 4}
+.sig-node{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1.8}
+.hair{stroke:var(--rule);stroke-width:1}
+
+/* ── Tables ────────────────────────────────────────────────── */
+.tablewrap{overflow-x:auto;margin:26px 0 0;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-family:var(--f-display);font-size:13.5px}
+caption{
+  text-align:left;padding:14px 18px 12px;border-bottom:1px solid var(--rule);
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  font-variation-settings:"wdth" 88,"wght" 700;background:var(--surface-2);
+}
+th,td{padding:11px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+thead th{
+  font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
+  font-variation-settings:"wdth" 88,"wght" 700;
+  border-bottom:1px solid var(--rule-2);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+tbody th{font-variation-settings:"wdth" 96,"wght" 650;color:var(--ink);white-space:nowrap}
+td{color:var(--ink-2);line-height:1.45}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap;font-variation-settings:"wght" 550;color:var(--ink)}
+td code,th code{font-size:12px;background:transparent;border:0;padding:0;color:var(--ink)}
+.step{
+  font-family:var(--f-mono);font-size:11.5px;color:var(--accent);
+  font-variation-settings:normal;white-space:nowrap;
+}
+.tag{
+  display:inline-block;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  font-variation-settings:"wdth" 88,"wght" 700;
+  padding:2px 7px;border:1px solid currentColor;border-radius:2px;white-space:nowrap;
+}
+.tag-human{color:var(--signal)}
+.tag-auto{color:var(--accent)}
+
+/* ── Callout ───────────────────────────────────────────────── */
+.callout{
+  border:1px solid var(--rule);border-left:3px solid var(--accent);
+  background:var(--surface);padding:20px 24px;margin:30px 0 0;max-width:74ch;
+}
+.callout.warn{border-left-color:var(--signal)}
+.callout h3{margin:0 0 8px}
+.callout p{margin-bottom:0;font-size:16px}
+.callout p + p{margin-top:12px}
+
+blockquote{
+  margin:26px 0 0;padding:0 0 0 22px;border-left:3px solid var(--accent);
+  font-size:19px;line-height:1.5;color:var(--ink);max-width:60ch;
+}
+blockquote cite{
+  display:block;margin-top:10px;font-style:normal;
+  font-family:var(--f-display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);font-variation-settings:"wdth" 88,"wght" 600;
+}
+
+/* ── Footer ────────────────────────────────────────────────── */
+footer{border-top:1px solid var(--rule);background:var(--surface);margin-top:0}
+footer .wrap{padding-block:36px 48px}
+footer p{font-family:var(--f-display);font-size:13.5px;color:var(--ink-2);max-width:76ch}
+footer .sig{
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  font-variation-settings:"wdth" 88,"wght" 600;margin-bottom:14px;
+}
+.footlinks{
+  display:flex;flex-wrap:wrap;gap:12px 28px;
+  margin:0 0 26px;padding:0 0 24px;list-style:none;
+  border-bottom:1px solid var(--rule);
+}
+.footlinks a{
+  font-family:var(--f-display);font-size:13.5px;
+  font-variation-settings:"wdth" 92,"wght" 550;
+  text-decoration:none;color:var(--ink);
+}
+.footlinks a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.footlinks a::after{content:" ↗";color:var(--ink-3);font-size:.85em}
+.footsrc{
+  font-family:var(--f-mono);font-size:12px;color:var(--ink-3);
+  margin-top:16px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .meta div{border-right:0;padding-right:0;margin-right:0;padding-block:10px;min-width:46%}
+}
+</style>
+</head>
+<body>
+<nav class="topbar" aria-label="Repository">
+  <div class="wrap">
+    <a class="mark" href="https://github.com/cushlabs/Harper">cushlabs<span>/</span>Harper</a>
+    <div class="links">
+      <a href="https://github.com/cushlabs/Harper#how-it-works">How it works</a>
+      <a href="https://github.com/cushlabs/Harper/tree/main/models">Models</a>
+      <a href="https://github.com/cushlabs/Harper#run-it">Run it</a>
+      <a href="https://github.com/cushlabs/Harper#license">License</a>
+      <a class="gh" href="https://github.com/cushlabs/Harper">Repository ↗</a>
+    </div>
+  </div>
+</nav>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">Project Harper · Target-state architecture</p>
+    <h1>Harper Reference Architecture</h1>
+    <p class="deck">Real-time detection of child sex trafficking during an emergency-department visit, assembled entirely from published HL7 and OMG standards and permissively licensed open-source components — so a hospital can adopt the <strong>implementation</strong> without licensing the capability.</p>
+    <dl class="meta">
+      <div><dt>Source</dt><dd>Use-case specification v1.2 §10</dd></div>
+      <div><dt>Engine</dt><dd>Kogito (KIE) on Quarkus</dd></div>
+      <div><dt>Platform</dt><dd>Any conformant Kubernetes</dd></div>
+      <div><dt>Code &amp; models</dt><dd>Apache-2.0</dd></div>
+      <div><dt>Screening instrument</dt><dd>Terms unresolved</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="advisory">
+  <div class="wrap">
+    <b>Read first</b>
+    <span>This is the <strong>target state</strong>. The repository today runs the BPMN/DMN models on Kogito with a React workstation; the FHIR, CDS Hooks and SMART on FHIR layers drawn here are specified, not yet built. Synthetic data only — not for clinical use without governance, local validation, and safeguards.</span>
+  </div>
+</div>
+
+<div class="wrap">
+<div class="layout">
+
+  <nav class="index" aria-label="Sections">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#scope"><span>01</span>Scope &amp; stance</a></li>
+      <li><a href="#principles"><span>02</span>Principles</a></li>
+      <li><a href="#logical"><span>03</span>Logical view</a></li>
+      <li><a href="#runtime"><span>04</span>Runtime view</a></li>
+      <li><a href="#decisions"><span>05</span>Decision logic</a></li>
+      <li><a href="#standards"><span>06</span>Standards &amp; stack</a></li>
+      <li><a href="#deployment"><span>07</span>Deployment view</a></li>
+      <li><a href="#crosscutting"><span>08</span>Cross-cutting</a></li>
+      <li><a href="#governance"><span>09</span>Governance</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+  <!-- ══════════════ 01 ══════════════ -->
+  <section id="scope">
+    <h2><span class="num">01</span><span>Scope and design stance</span></h2>
+    <p class="srcref">Specification §1 – §3</p>
+
+    <p class="lede">In 2022 a multi-vendor team demonstrated at the HIMSS Interoperability Showcase that software could watch a patient's record during an ED visit, recognise the pattern of possible child sex trafficking, administer a validated screen, and route an alert to a social worker in near real time. The demonstration worked. Its limitation was commercial: every component was proprietary, so any hospital adopting the workflow inherited a stack of licences.</p>
+
+    <p>Harper keeps the clinical model and the interoperability-first philosophy and replaces each proprietary component with a permissively licensed equivalent built on published standards — FHIR R4 / US Core, CDS Hooks, SMART on FHIR, Structured Data Capture, and the BPM+ Health stack of BPMN, DMN and CQL. The executable clinical process stays modelled in open-standard BPMN orchestrating open-standard DMN decisions: the 2022 design intent, carried forward on an open engine.</p>
+
+    <p>Everything in this document describes a system that <em>assists</em>. The screening decision is deterministic and inspectable, a referral is drafted by automation but routed only by a person, and the system never contacts law enforcement on its own.</p>
+
+    <blockquote>
+      Automation needs to complement the existing safeguards.
+      <cite>Design stance carried forward from the original architect</cite>
+    </blockquote>
+
+    <h3>What is out of scope in this version</h3>
+    <ul class="plain">
+      <li>Adult and labour-trafficking screening — adults use the RAFT tool; both are on the extensibility roadmap.</li>
+      <li>Automated notification to law enforcement. This is deliberately a governed, human-initiated decision, never an automated action.</li>
+      <li>A production predictive model as the basis for referral. Any machine-learning layer is an advisory triage aid only.</li>
+      <li>EHR-vendor-specific certification and go-live procedures for a named hospital.</li>
+    </ul>
+  </section>
+
+  <!-- ══════════════ 02 ══════════════ -->
+  <section id="principles">
+    <h2><span class="num">02</span><span>Architecture principles</span></h2>
+    <p class="srcref">Specification §4 — every design choice below answers to these</p>
+
+    <p>Harper is an open-standards system by deliberate design. Every layer — clinical data, real-time decision support, process orchestration, decision logic, screening apps, runtime platform — rests on a published standard and a permissively licensed implementation. No proprietary runtime and no per-seat licence is required to detect. This is the single most important departure from the 2022 blueprint, and it governs everything that follows.</p>
+
+    <dl class="principles">
+      <div><dt>Open and licence-free</dt><dd>Every layer is Apache-2.0, MIT, or the PostgreSQL licence. Terminology carries its own nuances — see §06.</dd></div>
+      <div><dt>Standards-first interoperability</dt><dd>Loosely coupled services communicate only through published HL7 and OMG standards. No private interfaces anywhere.</dd></div>
+      <div><dt>Explainable, human-in-the-loop</dt><dd>The screening decision is deterministic and auditable. The system advises; a clinician or social worker decides.</dd></div>
+      <div><dt>Trauma-informed and victim-centred</dt><dd>Screening is private, respectful, and never conducted in the presence of an accompanying person who could be a trafficker.</dd></div>
+      <div><dt>Privacy by design</dt><dd>Data minimisation, least privilege, encryption, and strict role-based access to flags and referrals — with attention to minor confidentiality and 42 CFR Part 2.</dd></div>
+      <div><dt>Portable and boundaryless</dt><dd>Ships as containers; runs on managed cloud, on-premises, or a single node at the edge for sites with poor connectivity.</dd></div>
+      <div><dt>Extensible</dt><dd>The same pattern generalises to adult, labour, and elder-abuse screening, and to EMS and skilled-nursing settings.</dd></div>
+    </dl>
+  </section>
+
+  <!-- ══════════════ 03 ══════════════ -->
+  <section id="logical">
+    <h2><span class="num">03</span><span>Logical view</span></h2>
+    <p class="srcref">Specification §9.2, §10.2 — components and the standards between them</p>
+
+    <p>Harper is a set of loosely coupled services. Every arrow in the diagram below is a published standard, which is what makes any single box replaceable without touching the others: swap HAPI FHIR for Medplum, or Kogito for Flowable, and the interfaces are unchanged. The host EHR sits outside Harper's boundary — it remains the legal record of the encounter, and Harper reaches it only through CDS Hooks and SMART on FHIR.</p>
+
+    <figure>
+      <div class="figbody">
+        <svg viewBox="0 0 970 900" role="img" aria-label="Layered logical architecture: the host EHR triggers Harper's process and decision service over CDS Hooks and launches two SMART on FHIR apps; the Kogito service runs BPMN processes, DMN decisions and a CDS Hooks endpoint; a HAPI FHIR platform holds all clinical resources, terminology and audit records, backed by PostgreSQL; every service runs as a Kubernetes workload.">
+          <defs>
+            <marker id="a-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--rule-2)"/>
+            </marker>
+            <marker id="a-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+            </marker>
+          </defs>
+
+          <!-- BAND 1 : host EHR -->
+          <text class="t-band" x="90" y="64">HOST EHR — OUTSIDE HARPER'S BOUNDARY</text>
+          <rect class="box-ext" x="90" y="76" width="790" height="74" rx="2"/>
+          <text class="t-node" x="108" y="104">Electronic health record  ·  CDS client</text>
+          <text class="t-sub" x="108" y="124">Legal record of the encounter · fires hooks · launches SMART apps · any US Core EHR</text>
+          <text class="t-sub" x="108" y="140">Epic · Oracle Health · athenahealth · OpenMRS</text>
+
+          <!-- edges from EHR -->
+          <path class="edge" d="M180,150 L180,206" marker-end="url(#a-p)"/>
+          <text class="t-edge" x="190" y="192">SMART launch</text>
+          <text class="t-edge" x="190" y="205">patient + encounter context</text>
+
+          <path class="edge-em" d="M480,150 L480,362" marker-end="url(#a-a)" marker-start="url(#a-a)"/>
+          <text class="t-edge-em" x="492" y="192">CDS Hooks 2.0.1</text>
+          <text class="t-edge" x="492" y="205">hook + prefetch ⇄ card + launch link</text>
+
+          <path class="edge" d="M820,150 L820,206" marker-end="url(#a-p)"/>
+          <text class="t-edge" x="810" y="198" text-anchor="end">SMART launch</text>
+
+          <!-- BAND 2 : SMART apps -->
+          <text class="t-band" x="90" y="172">SMART ON FHIR APPS</text>
+          <rect class="box-harper" x="90" y="212" width="370" height="96" rx="2"/>
+          <text class="t-node" x="106" y="240">Screening app</text>
+          <text class="t-sub" x="106" y="259">Renders the SSCST as a FHIR SDC Questionnaire</text>
+          <text class="t-sub" x="106" y="275">Tablet self-entry or private verbal · English / Spanish</text>
+          <text class="t-sub" x="106" y="291">Trauma-informed · bystander-safe · no visible labels</text>
+
+          <rect class="box-harper" x="500" y="212" width="380" height="96" rx="2"/>
+          <text class="t-node" x="516" y="240">Social-worker worklist app</text>
+          <text class="t-sub" x="516" y="259">Prioritised queue of finalised referral Tasks</text>
+          <text class="t-sub" x="516" y="275">Full context: screen result + contributing items</text>
+          <text class="t-sub" x="516" y="291">Disposition, safety planning, audit trail</text>
+
+          <!-- BAND 3 : process + decision -->
+          <text class="t-band" x="90" y="330">PROCESS &amp; DECISION</text>
+          <rect class="box-core" x="90" y="368" width="700" height="130" rx="2"/>
+          <text class="t-node" x="106" y="396">Process &amp; decision service</text>
+          <text class="t-sub" x="106" y="414">Kogito (KIE) on Quarkus · Apache-2.0 · stateless · the only place clinical logic lives</text>
+
+          <rect class="chip-core" x="106" y="428" width="216" height="52" rx="2"/>
+          <text class="t-chip" x="118" y="447">BPMN 2.0</text>
+          <text class="t-chip-sub" x="118" y="462">One instance per ED encounter;</text>
+          <text class="t-chip-sub" x="118" y="474">registrar → nurse → practitioner</text>
+
+          <rect class="chip-core" x="336" y="428" width="216" height="52" rx="2"/>
+          <text class="t-chip" x="348" y="447">DMN 1.3</text>
+          <text class="t-chip-sub" x="348" y="462">ED Prescreen · Greenbaum ·</text>
+          <text class="t-chip-sub" x="348" y="474">Alarm Signs — inspectable tables</text>
+
+          <rect class="chip-core" x="566" y="428" width="216" height="52" rx="2"/>
+          <text class="t-chip" x="578" y="447">CDS Hooks 2.0.1 service</text>
+          <text class="t-chip-sub" x="578" y="462">Evaluates eligibility from prefetch;</text>
+          <text class="t-chip-sub" x="578" y="474">returns cards + SMART launch link</text>
+
+          <!-- screening app ⇄ FHIR platform, routed left -->
+          <path class="edge" d="M90,260 L50,260 L50,612 L84,612" marker-end="url(#a-p)" marker-start="url(#a-p)"/>
+          <text class="t-edge-em" x="58" y="536">FHIR SDC</text>
+          <text class="t-edge" x="58" y="549">Questionnaire → QuestionnaireResponse</text>
+
+          <!-- decision → FHIR -->
+          <path class="edge-em" d="M380,498 L380,552" marker-end="url(#a-a)"/>
+          <text class="t-edge-em" x="390" y="536">FHIR REST</text>
+          <text class="t-edge" x="390" y="549">writes RiskAssessment, Flag, Task (draft)</text>
+
+          <!-- BAND 4 : FHIR platform -->
+          <text class="t-band" x="90" y="518">CLINICAL DATA, TERMINOLOGY &amp; AUDIT</text>
+          <rect class="box-harper" x="90" y="558" width="700" height="110" rx="2"/>
+          <text class="t-node" x="106" y="586">FHIR data platform</text>
+          <text class="t-sub" x="106" y="604">HAPI FHIR · R4 (4.0.1) · US Core STU7 · the standards-based store and API</text>
+
+          <rect class="chip" x="106" y="616" width="216" height="42" rx="2"/>
+          <text class="t-chip" x="118" y="634">US Core clinical resources</text>
+          <text class="t-chip-sub" x="118" y="648">Patient · Encounter · Observation · Task</text>
+
+          <rect class="chip" x="336" y="616" width="216" height="42" rx="2"/>
+          <text class="t-chip" x="348" y="634">Terminology $expand</text>
+          <text class="t-chip-sub" x="348" y="648">ICD-10-CM · LOINC · SNOMED CT</text>
+
+          <rect class="chip" x="566" y="616" width="216" height="42" rx="2"/>
+          <text class="t-chip" x="578" y="634">AuditEvent · Provenance</text>
+          <text class="t-chip-sub" x="578" y="648">Every access and automated action</text>
+
+          <!-- FHIR → worklist subscription, routed right -->
+          <path class="edge" d="M790,600 L835,600 L835,314" marker-end="url(#a-p)"/>
+          <text class="t-edge" x="845" y="438">FHIR Subscription</text>
+          <text class="t-edge" x="845" y="453">Task (requested)</text>
+
+          <!-- FHIR → postgres -->
+          <path class="edge" d="M440,668 L440,712" marker-end="url(#a-p)"/>
+          <text class="t-edge" x="450" y="696">SQL · encrypted at rest</text>
+
+          <rect class="box" x="240" y="718" width="400" height="56" rx="2"/>
+          <text class="t-node" x="256" y="742">PostgreSQL</text>
+          <text class="t-sub" x="256" y="760">StatefulSet + PVC, or a managed database · backups</text>
+
+          <!-- BAND 5 : platform -->
+          <rect class="box-ext" x="90" y="814" width="790" height="50" rx="2"/>
+          <text class="t-chip" x="106" y="836">Kubernetes  ·  Helm  ·  OCI images  ·  Ingress + TLS  ·  ConfigMap / Secret</text>
+          <text class="t-chip-sub" x="106" y="852">Every service above ships as a container and runs as a workload here — managed cloud, on-premises, or a single node at the edge</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <span><i class="key k-ext"></i>Outside Harper's boundary</span>
+        <span><i class="key k-harper"></i>Harper service</span>
+        <span><i class="key" style="border-color:var(--accent);background:var(--accent-soft)"></i>Where all clinical logic lives</span>
+      </div>
+      <figcaption><b>Figure 1 — Logical view</b>The EHR reaches Harper only over CDS Hooks and SMART launch; the screening app writes to the FHIR platform directly over SDC, bypassing the decision service. Because every edge is a published standard, each box is independently replaceable.</figcaption>
+    </figure>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Component responsibilities</caption>
+        <thead><tr><th scope="col">Component</th><th scope="col">Responsibility</th><th scope="col">Implementation</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">EHR (CDS client)</th><td>Source of truth for the encounter. Fires CDS Hooks, launches SMART apps, stores the clinical documentation and the legal record.</td><td>Any US Core EHR; OpenMRS for fully open deployments</td></tr>
+          <tr><th scope="row">FHIR data platform</th><td>Standards-based clinical store and API for <code>Patient</code>, <code>Encounter</code>, <code>Observation</code>, <code>QuestionnaireResponse</code>, <code>RiskAssessment</code>, <code>Flag</code>, <code>Task</code>, <code>Provenance</code>.</td><td>HAPI FHIR (primary); Medplum</td></tr>
+          <tr><th scope="row">Process &amp; decision service</th><td>Executes the BPMN encounter process and its DMN decisions; exposes the CDS Hooks endpoints; writes risk, flag and referral resources.</td><td>Kogito (KIE) on Quarkus; Flowable or Operaton as alternates</td></tr>
+          <tr><th scope="row">Screening app</th><td>Renders the Greenbaum SSCST as an SDC Questionnaire, captures responses confidentially, submits a <code>QuestionnaireResponse</code>.</td><td>SMART on FHIR app (React)</td></tr>
+          <tr><th scope="row">Worklist app</th><td>Surfaces finalised referral <code>Task</code>s with full context; supports disposition and safety planning.</td><td>SMART on FHIR app (React)</td></tr>
+          <tr><th scope="row">Terminology service</th><td>Serves value sets and code systems for coded data and decision logic.</td><td>HAPI FHIR terminology; Snowstorm for SNOMED CT</td></tr>
+          <tr><th scope="row">Audit &amp; provenance</th><td>Immutable record of every access to trafficking-related data and every automated decision.</td><td><code>AuditEvent</code> and <code>Provenance</code> in the FHIR store</td></tr>
+          <tr><th scope="row">Integration edges</th><td>Any non-FHIR interface — HIE feeds, legacy interfaces, outside medical records.</td><td>Apache Camel</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════════ 04 ══════════════ -->
+  <section id="runtime">
+    <h2><span class="num">04</span><span>Runtime view</span></h2>
+    <p class="srcref">Specification §6.2 — one BPMN process instance per ED encounter</p>
+
+    <p>The pathway mirrors the patient's journey through the department. Each clinical step is a BPMN user task, so an instance runs until it reaches one and then waits for a human to complete it with data; the business-rule tasks read those answers and bind to the DMN decisions. Two BPMN signals link the lanes — the nurse's at-risk decision throws <code>Referral drafted</code>, which starts the practitioner; the practitioner's finalisation throws <code>Suspect sex trafficking</code>, which starts the social worker.</p>
+
+    <figure>
+      <div class="figbody">
+        <svg class="wide" viewBox="0 0 1240 664" role="img" aria-label="Four-lane runtime flow across seven stages: the registrar opens the encounter; the nurse triages, runs the ED Prescreen decision, administers the Greenbaum screen and drafts a referral, throwing the Referral drafted signal; the practitioner examines the patient, runs the Alarm Signs decision, finalises the referral — throwing the Suspect sex trafficking signal — and then diagnoses, treats and discharges; the social worker conducts safety assessment, service coordination and safety planning. A strip below lists the FHIR resources written at each stage.">
+          <defs>
+            <marker id="b-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--rule-2)"/>
+            </marker>
+            <marker id="b-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--signal)"/>
+            </marker>
+          </defs>
+
+          <!-- column headers -->
+          <text class="t-col" x="140" y="30">1 · REGISTRATION</text>
+          <text class="t-col" x="296" y="30">2 · TRIAGE + TRIGGER</text>
+          <text class="t-col" x="452" y="30">3 · SCREEN</text>
+          <text class="t-col" x="608" y="30">4 · SCORE + DRAFT</text>
+          <text class="t-col" x="764" y="30">5 · EXAM</text>
+          <text class="t-col" x="920" y="30">6 · FINALISE</text>
+          <text class="t-col" x="1076" y="30">7 · SOCIAL WORK + DISCHARGE</text>
+          <line class="hair" x1="0" y1="42" x2="1240" y2="42"/>
+
+          <!-- lanes -->
+          <rect class="lane-fill" x="0" y="160" width="1240" height="104"/>
+          <rect class="lane-fill" x="0" y="368" width="1240" height="104"/>
+          <line class="hair" x1="0" y1="160" x2="1240" y2="160"/>
+          <line class="hair" x1="0" y1="264" x2="1240" y2="264"/>
+          <line class="hair" x1="0" y1="368" x2="1240" y2="368"/>
+          <line class="hair" x1="0" y1="472" x2="1240" y2="472"/>
+          <text class="t-lane" x="116" y="112" text-anchor="end">REGISTRAR</text>
+          <text class="t-lane" x="116" y="216" text-anchor="end">NURSE</text>
+          <text class="t-lane" x="116" y="320" text-anchor="end">PRACTITIONER</text>
+          <text class="t-lane" x="116" y="424" text-anchor="end">SOCIAL WORKER</text>
+          <line class="hair" x1="128" y1="42" x2="128" y2="472"/>
+
+          <!-- lane A · registrar -->
+          <rect class="box" x="140" y="72" width="148" height="72" rx="2"/>
+          <text class="t-chip" x="150" y="93">Open ED encounter</text>
+          <text class="t-chip-sub" x="150" y="110">Register patient; pull</text>
+          <text class="t-chip-sub" x="150" y="123">outside records via HIE</text>
+          <path class="edge" d="M214,144 L214,212 L290,212" marker-end="url(#b-p)"/>
+
+          <!-- lane B · nurse -->
+          <rect class="box" x="296" y="176" width="148" height="72" rx="2"/>
+          <text class="t-chip" x="306" y="197">Triage</text>
+          <text class="t-chip-sub" x="306" y="214">Acuity + chief complaint;</text>
+          <text class="t-chip-sub" x="306" y="227">CDS hook fires, card returns</text>
+          <text class="t-chip-sub" x="306" y="241" fill="var(--accent)">→ ED Prescreen (DMN)</text>
+          <path class="edge" d="M444,212 L446,212" marker-end="url(#b-p)"/>
+
+          <rect class="box" x="452" y="176" width="148" height="72" rx="2"/>
+          <text class="t-chip" x="462" y="197">Administer screen</text>
+          <text class="t-chip-sub" x="462" y="214">Patient alone; SMART app</text>
+          <text class="t-chip-sub" x="462" y="227">renders the SSCST</text>
+          <text class="t-chip-sub" x="462" y="241">6 items · 7 required inputs</text>
+          <path class="edge" d="M600,212 L602,212" marker-end="url(#b-p)"/>
+
+          <rect class="box" x="608" y="176" width="148" height="72" rx="2"/>
+          <text class="t-chip" x="618" y="197">Score → draft</text>
+          <text class="t-chip-sub" x="618" y="214">≥ 2 of six → atRisk;</text>
+          <text class="t-chip-sub" x="618" y="227">Flag + draft referral</text>
+          <text class="t-chip-sub" x="618" y="241" fill="var(--accent)">→ Greenbaum (DMN)</text>
+
+          <!-- signal 1 : referral drafted -->
+          <path class="edge-sig" d="M756,212 L770,212 L770,227" marker-end="url(#b-s)"/>
+          <circle class="sig-node" cx="770" cy="246" r="13"/>
+          <circle cx="770" cy="246" r="6.5" fill="none" stroke="var(--signal)" stroke-width="1.4"/>
+          <text class="t-sig" x="790" y="250">Referral drafted</text>
+          <path class="edge-sig" d="M770,259 L770,274" marker-end="url(#b-s)"/>
+
+          <!-- lane C · practitioner -->
+          <rect class="box" x="764" y="280" width="148" height="72" rx="2"/>
+          <text class="t-chip" x="774" y="301">Examine</text>
+          <text class="t-chip-sub" x="774" y="318">Holistic red-flag check;</text>
+          <text class="t-chip-sub" x="774" y="331">findings as Observations</text>
+          <text class="t-chip-sub" x="774" y="345" fill="var(--accent)">→ Alarm Signs (DMN)</text>
+          <path class="edge" d="M912,316 L914,316" marker-end="url(#b-p)"/>
+
+          <rect class="box-human" x="920" y="280" width="148" height="72" rx="2"/>
+          <text class="t-chip" x="930" y="301">Finalise referral</text>
+          <text class="t-chip-sub" x="930" y="318">draft / proposal →</text>
+          <text class="t-chip-sub" x="930" y="331">requested / order</text>
+          <text class="t-sig" x="930" y="345">Human decision — LIP</text>
+          <path class="edge" d="M1068,316 L1072,316" marker-end="url(#b-p)"/>
+
+          <rect class="box" x="1076" y="280" width="148" height="72" rx="2"/>
+          <text class="t-chip" x="1086" y="301">Diagnose &amp; discharge</text>
+          <text class="t-chip-sub" x="1086" y="318">Immediate care; ICD-10-CM</text>
+          <text class="t-chip-sub" x="1086" y="331">suggested, clinician confirms</text>
+          <text class="t-chip-sub" x="1086" y="345">Discharge safety planning</text>
+
+          <!-- signal 2 : suspect sex trafficking -->
+          <path class="edge-sig" d="M994,352 L994,376 L1032,376" marker-end="url(#b-s)"/>
+          <text class="t-sig" x="986" y="363" text-anchor="end">Suspect sex trafficking</text>
+          <circle class="sig-node" cx="1051" cy="376" r="13"/>
+          <circle cx="1051" cy="376" r="6.5" fill="none" stroke="var(--signal)" stroke-width="1.4"/>
+          <path class="edge-sig" d="M1051,389 L1051,404 L1070,404" marker-end="url(#b-s)"/>
+
+          <!-- lane D · social worker -->
+          <rect class="box" x="1076" y="384" width="148" height="72" rx="2"/>
+          <text class="t-chip" x="1086" y="405">Safety &amp; services</text>
+          <text class="t-chip-sub" x="1086" y="422">Safety assessment, service</text>
+          <text class="t-chip-sub" x="1086" y="435">coordination, safety plan</text>
+          <text class="t-sig" x="1086" y="449">No automated escalation</text>
+
+          <!-- artifact strip -->
+          <line class="hair" x1="0" y1="496" x2="1240" y2="496"/>
+          <text class="t-mono-h" x="8" y="518">WRITTEN TO THE FHIR RECORD AT EACH STAGE</text>
+          <text class="t-mono" x="140" y="540">Patient</text>
+          <text class="t-mono" x="140" y="553">Encounter</text>
+          <text class="t-mono" x="296" y="540">Condition</text>
+          <text class="t-mono" x="296" y="553">(chief complaint)</text>
+          <text class="t-mono" x="452" y="540">Questionnaire</text>
+          <text class="t-mono" x="452" y="553">QuestionnaireResponse</text>
+          <text class="t-mono" x="608" y="540">RiskAssessment</text>
+          <text class="t-mono" x="608" y="553">Flag</text>
+          <text class="t-mono" x="608" y="566">Task (draft)</text>
+          <text class="t-mono" x="764" y="540">Observation</text>
+          <text class="t-mono" x="764" y="553">DetectedIssue</text>
+          <text class="t-mono" x="920" y="540">Task (requested)</text>
+          <text class="t-mono" x="920" y="553">Provenance</text>
+          <text class="t-mono" x="1076" y="540">CarePlan</text>
+          <text class="t-mono" x="1076" y="553">Communication</text>
+          <text class="t-mono" x="1076" y="566">Condition (T74.5x)</text>
+
+          <line class="hair" x1="0" y1="588" x2="1240" y2="588"/>
+          <text class="t-mono-h" x="8" y="610">AUDITED THROUGHOUT</text>
+          <text class="t-mono" x="8" y="632">AuditEvent for every access to trafficking-related data and every CDS invocation.</text>
+          <text class="t-mono" x="8" y="648">Provenance for every automatically created or modified resource — immutable, retained per institutional policy.</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <span><i class="key"></i>BPMN user task</span>
+        <span><i class="key k-human"></i>Human decision gate</span>
+        <span><i class="key k-sig"></i>BPMN signal</span>
+        <span style="color:var(--accent)"><i class="key" style="border-color:var(--accent)"></i>DMN decision evaluated at this step</span>
+      </div>
+      <figcaption><b>Figure 2 — Runtime view</b>Automation drafts; a person routes. A positive screen creates the referral as <code>Task</code> status <code>draft</code> / intent <code>proposal</code>, and it does not reach the social-worker worklist until a licensed independent practitioner finalises it to <code>requested</code> / <code>order</code>. The finalising practitioner is recorded.</figcaption>
+    </figure>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Interaction pattern — the open-standards replacement for the 2022 vendor trigger</caption>
+        <thead><tr><th scope="col">Step</th><th scope="col">Producer → consumer</th><th scope="col">Mechanism</th><th scope="col">Payload</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><span class="step">01</span> Trigger</th><td>EHR → CDS service</td><td>CDS Hooks 2.0.1 — <code>patient-view</code>, encounter, <code>order-select</code></td><td>Hook context + prefetch: Patient, Encounter, Condition, Observation</td></tr>
+          <tr><th scope="row"><span class="step">02</span> Eligibility card</th><td>CDS service → EHR</td><td>CDS Hooks response card + SMART link</td><td>Suggestion card, app-launch link, dismissible with reason</td></tr>
+          <tr><th scope="row"><span class="step">03</span> Screen launch</th><td>EHR → screening app</td><td>SMART on FHIR launch, scoped OAuth2</td><td>Launch context: patient, encounter</td></tr>
+          <tr><th scope="row"><span class="step">04</span> Screen render</th><td>Screening app ⇄ FHIR platform</td><td>FHIR Structured Data Capture</td><td><code>Questionnaire</code> → <code>QuestionnaireResponse</code></td></tr>
+          <tr><th scope="row"><span class="step">05</span> Score &amp; flag</th><td>CDS service → FHIR platform</td><td>FHIR REST create / update</td><td><code>RiskAssessment</code>, <code>Flag</code>, <code>Task</code>, <code>DetectedIssue</code></td></tr>
+          <tr><th scope="row"><span class="step">06</span> Referral</th><td>FHIR platform → worklist app</td><td>FHIR Subscription or worklist query</td><td><code>Task</code> with full screening context</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Alternate and exception flows</h3>
+    <ul class="plain">
+      <li><strong>Not eligible.</strong> Age outside the validated band, or no high-risk chief complaint — no prompt, and nothing added to the record beyond normal care.</li>
+      <li><strong>Prompt declined.</strong> The nurse dismisses the card, for instance because the patient is clinically unstable or not alone. The reason is captured and the prompt can re-fire later in the encounter.</li>
+      <li><strong>Patient accompanied.</strong> Screening is deferred until the patient can be seen alone. The system must never surface trafficking content where an accompanying person can see it.</li>
+      <li><strong>Screen negative, clinician concerned.</strong> A provider can raise a referral manually. A negative screen never blocks clinical judgment.</li>
+      <li><strong>Prior-visit signal.</strong> History indicating a screen should have fired at an earlier visit is surfaced at this one.</li>
+      <li><strong>Connectivity loss.</strong> At edge sites the screen still runs locally; referrals queue and reconcile when connectivity returns.</li>
+    </ul>
+  </section>
+
+  <!-- ══════════════ 05 ══════════════ -->
+  <section id="decisions">
+    <h2><span class="num">05</span><span>Decision logic</span></h2>
+    <p class="srcref">Specification §8 — three DMN models, no hand-written business logic</p>
+
+    <p>All process and decision logic lives in the BPMN and DMN files. Kogito generates one REST endpoint per executable process and per decision; the service contains no hand-written Java. A rule changes by editing a model, never by writing code — which is also what makes the logic portable to another open engine and shareable with another institution.</p>
+
+    <div class="tablewrap">
+      <table>
+        <caption>The three decisions</caption>
+        <thead><tr><th scope="col">Decision</th><th scope="col">Form</th><th scope="col">Question it answers</th><th scope="col">Inputs</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>EDPrescreen</code></th><td>DMN 1.3 decision table</td><td>Should this patient be screened at all?</td><td>Standing order · high-risk chief complaint · age 13–17</td></tr>
+          <tr><th scope="row"><code>GreenbaumScreen</code></th><td>DMN 1.3 literal expression</td><td>Is the patient at risk? Positive at ≥ 2 of six items.</td><td>Seven inputs covering six scored items — all required on every call</td></tr>
+          <tr><th scope="row"><code>AlarmSigns</code></th><td>DMN 1.3 count + threshold</td><td>Do the clinician's holistic findings warrant suspicion?</td><td>Seven observed signs, counted against a configurable threshold</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Two scorings, one call</h3>
+    <p>The significant-trauma item is answered by two subquestions: <strong>1a</strong> broken bones or cuts needing stitches, and <strong>1b</strong> knocked unconscious. That is why six scored items take seven inputs. The original screen counts a yes to either subquestion as one positive; a modified tool evaluated in the multi-site study drops 1a and scores 1b alone. <code>greenbaum.dmn</code> publishes both results from a single evaluation, and <strong>Harper acts on <code>atRisk</code></strong> — the modified scoring.</p>
+
+    <p style="font-size:14.5px;color:var(--ink-3);font-family:var(--f-display)">The dual scoring is implemented in the decision model and documented in the repository; specification v1.2 §10.4 still describes the earlier single-output form. All seven inputs are required on every call, including <code>historyOfBrokenBonesOrCuts</code>, even though the modified tool does not score it.</p>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Screen performance at the ≥ 2 cutoff — Greenbaum VJ et al., J Adolesc Health 2018 (n = 810, 16 sites; ED subgroup n = 91)</caption>
+        <thead><tr><th scope="col">Decision output</th><th scope="col">Trauma scores on</th><th scope="col">ED sensitivity</th><th scope="col">ED specificity</th><th scope="col">Total sens.</th><th scope="col">Total spec.</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>atRisk</code> — Harper default</th><td>1b only</td><td class="num">83.3%</td><td class="num">59.5%</td><td class="num">84.4%</td><td class="num">64.6%</td></tr>
+          <tr><th scope="row"><code>atRiskOriginalScreen</code></th><td>1a or 1b</td><td class="num">83.3%</td><td class="num">49.4%</td><td class="num">84.4%</td><td class="num">57.5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      <h3>Size the social-work path for a high false-positive rate</h3>
+      <p>Dropping item 1a buys roughly ten points of ED specificity at no cost to sensitivity, which is why Harper scores it by default. Even so, at 59.5% specificity roughly forty per cent of non-victims screen positive. The original single-site study reported 92.3% / 74.4% — better than either multi-site result. <strong>Do not plan around it.</strong> Capacity planning for downstream social work should assume the multi-site figures.</p>
+    </div>
+
+    <div class="callout">
+      <h3>On “metaheuristics” and machine learning</h3>
+      <p>The 2022 blueprint described a metaheuristic risk score computed from accumulating data points. Harper separates two concerns deliberately. The screening decision that can trigger a referral stays deterministic and transparent — DMN and CQL — for clinical safety, auditability and defensibility.</p>
+      <p>An optional machine-learning layer may help triage, for example by learning which chief-complaint patterns warrant a prompt. It is advisory only, must surface the features behind a suggestion, and never becomes the sole basis for a referral.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════ 06 ══════════════ -->
+  <section id="standards">
+    <h2><span class="num">06</span><span>Standards and open-source stack</span></h2>
+    <p class="srcref">Specification §4.1, §9.3, §10.1</p>
+
+    <p>Every layer maps to a published standard and an open-source implementation. Nothing in the table below carries a runtime licence fee for the detection capability.</p>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Open by default — the whole stack</caption>
+        <thead><tr><th scope="col">Layer</th><th scope="col">Open standard</th><th scope="col">Implementation</th><th scope="col">Licence</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Clinical data &amp; API</th><td>HL7 FHIR R4 (4.0.1), US Core STU7</td><td>HAPI FHIR</td><td>Apache-2.0</td></tr>
+          <tr><th scope="row">Real-time decision support</th><td>CDS Hooks 2.0.1, SMART on FHIR</td><td>CDS service on Kogito / Quarkus</td><td>Apache-2.0</td></tr>
+          <tr><th scope="row">Process orchestration</th><td>BPMN 2.0 (OMG)</td><td>Kogito (KIE)</td><td>Apache-2.0</td></tr>
+          <tr><th scope="row">Decision logic</th><td>DMN 1.3 (OMG), CQL</td><td>Kogito / Drools DMN</td><td>Apache-2.0</td></tr>
+          <tr><th scope="row">Screening &amp; worklist apps</th><td>FHIR SDC, SMART on FHIR</td><td>SMART app (React)</td><td>Apache-2.0 / MIT</td></tr>
+          <tr><th scope="row">Terminology</th><td>ICD-10-CM, LOINC, SNOMED CT</td><td>HAPI terminology; Snowstorm</td><td>Apache-2.0 *</td></tr>
+          <tr><th scope="row">Service runtime</th><td>OCI images</td><td>Quarkus</td><td>Apache-2.0</td></tr>
+          <tr><th scope="row">Orchestration platform</th><td>Kubernetes, Helm, OCI</td><td>Kubernetes, any distribution</td><td>Apache-2.0</td></tr>
+          <tr><th scope="row">Integration edges</th><td>—</td><td>Apache Camel</td><td>Apache-2.0</td></tr>
+          <tr><th scope="row">Data store</th><td>SQL</td><td>PostgreSQL</td><td>PostgreSQL Licence</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:14px;color:var(--ink-3);margin-top:12px;font-family:var(--f-display)">* The SNOMED CT tooling is open-source; the SNOMED CT <em>content</em> requires a licence — free to use in the United States via the NLM/UMLS. ICD-10-CM and LOINC carry no such restriction.</p>
+
+    <h3>What changes from the 2022 blueprint</h3>
+    <div class="tablewrap">
+      <table>
+        <caption>Component mapping — proprietary to open-source</caption>
+        <thead><tr><th scope="col">Capability</th><th scope="col">2022 proprietary</th><th scope="col">Harper open-source</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">FHIR data platform</th><td>Smile CDR</td><td>HAPI FHIR (primary); Medplum</td></tr>
+          <tr><th scope="row">Process &amp; decision engine</th><td>Trisotech Digital Enterprise Suite</td><td>Kogito (KIE) on Quarkus — selected; Flowable or Operaton as alternates</td></tr>
+          <tr><th scope="row">Real-time triggering</th><td>Vendor process / subscription engine</td><td>CDS Hooks 2.0.1 + FHIR Subscriptions</td></tr>
+          <tr><th scope="row">EHR</th><td>Cerner Millennium</td><td>Any US Core EHR via SMART on FHIR + CDS Hooks; OpenMRS for open deployments</td></tr>
+          <tr><th scope="row">Integration / ESB</th><td>Red Hat Fuse</td><td>Apache Camel</td></tr>
+          <tr><th scope="row">Screening &amp; worklist UI</th><td>Custom vendor UI</td><td>SMART on FHIR app rendering SDC</td></tr>
+          <tr><th scope="row">Orchestration platform</th><td>Red Hat OpenShift</td><td>Kubernetes, any conformant distribution; k3s or MicroShift at the edge</td></tr>
+          <tr><th scope="row">Risk scoring</th><td>Vendor “metaheuristics”</td><td>Transparent DMN / CQL; optional explainable ML as an advisory aid only</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <h3>Why Kogito</h3>
+      <p>Kogito is the Apache-2.0, cloud-native successor to jBPM and Drools, aligned with the DMN and BPM+ Health heritage of the original design and a natural fit for Quarkus on Kubernetes. Flowable CE and Operaton — the community fork of Camunda 7 — remain drop-in alternatives that run the same model files. Camunda 7 CE itself reached end of life in October 2025, and Camunda 8 is not offered as a free product.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════ 07 ══════════════ -->
+  <section id="deployment">
+    <h2><span class="num">07</span><span>Deployment view</span></h2>
+    <p class="srcref">Specification §10.3 — containerised services on any conformant Kubernetes</p>
+
+    <p>Each component ships as an OCI image and runs as a Deployment behind a Service. An Ingress or Gateway exposes the SMART apps and the CDS Hooks endpoint; ConfigMaps and Secrets hold thresholds, routing and credentials; PostgreSQL backs the FHIR server as a StatefulSet or a managed database; and a HorizontalPodAutoscaler scales the stateless decision service to departmental peaks. The stack installs with Helm or Kustomize.</p>
+
+    <figure>
+      <div class="figbody">
+        <svg class="midwide" viewBox="0 0 1120 580" role="img" aria-label="Kubernetes deployment topology: the hospital EHR reaches the cluster over TLS through an Ingress with cert-manager; inside the harper namespace, the Kogito service, screening app and worklist app run as Deployments behind Services, with an HPA on the decision service; HAPI FHIR and a terminology service sit below them, backed by a PostgreSQL StatefulSet with a persistent volume; a ConfigMap and Secret supply configuration to every workload.">
+          <defs>
+            <marker id="c-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--rule-2)"/>
+            </marker>
+            <marker id="c-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+            </marker>
+          </defs>
+
+          <!-- external EHR -->
+          <rect class="box-ext" x="20" y="118" width="270" height="86" rx="2"/>
+          <text class="t-node" x="36" y="146">Hospital EHR</text>
+          <text class="t-sub" x="36" y="165">SMART launch + CDS Hooks endpoints</text>
+          <text class="t-sub" x="36" y="181">Pre-registered with the authorisation server</text>
+          <text class="t-sub" x="36" y="197">OAuth2 scopes minimally necessary</text>
+          <path class="edge-em" d="M290,161 L334,161" marker-end="url(#c-a)" marker-start="url(#c-a)"/>
+          <text class="t-edge" x="312" y="150" text-anchor="middle">TLS</text>
+
+          <!-- cluster -->
+          <rect class="box-ext" x="340" y="24" width="760" height="480" rx="3" stroke="var(--accent)"/>
+          <text class="t-band" x="358" y="48" fill="var(--accent)">KUBERNETES CLUSTER  ·  NAMESPACE: HARPER</text>
+
+          <rect class="box" x="364" y="60" width="712" height="48" rx="2"/>
+          <text class="t-chip" x="378" y="80">Ingress / Gateway API  +  cert-manager</text>
+          <text class="t-chip-sub" x="378" y="95">TLS termination · the only externally reachable surface</text>
+
+          <path class="edge" d="M446,108 L446,140" marker-end="url(#c-p)"/>
+          <text class="t-edge" x="454" y="128">/cds-services</text>
+          <path class="edge" d="M622,108 L622,140" marker-end="url(#c-p)"/>
+          <text class="t-edge" x="630" y="128">app UI</text>
+          <path class="edge" d="M798,108 L798,140" marker-end="url(#c-p)"/>
+          <text class="t-edge" x="806" y="128">app UI</text>
+
+          <!-- row 1 -->
+          <rect class="box-core" x="364" y="140" width="164" height="104" rx="2"/>
+          <text class="t-chip" x="376" y="160">harper-service</text>
+          <text class="t-chip-sub" x="376" y="176">Kogito on Quarkus</text>
+          <text class="t-chip-sub" x="376" y="190">Deployment ×2 + HPA</text>
+          <text class="t-chip-sub" x="376" y="204">Stateless · rolling updates</text>
+          <text class="t-chip-sub" x="376" y="222">liveness /q/health/live</text>
+          <text class="t-chip-sub" x="376" y="234">readiness /q/health/ready</text>
+
+          <rect class="box-harper" x="540" y="140" width="164" height="104" rx="2"/>
+          <text class="t-chip" x="552" y="160">screening-app</text>
+          <text class="t-chip-sub" x="552" y="176">SMART on FHIR app</text>
+          <text class="t-chip-sub" x="552" y="190">Deployment + Service</text>
+          <text class="t-chip-sub" x="552" y="204">Renders the SDC</text>
+          <text class="t-chip-sub" x="552" y="216">questionnaire</text>
+
+          <rect class="box-harper" x="716" y="140" width="164" height="104" rx="2"/>
+          <text class="t-chip" x="728" y="160">worklist-app</text>
+          <text class="t-chip-sub" x="728" y="176">SMART on FHIR app</text>
+          <text class="t-chip-sub" x="728" y="190">Deployment + Service</text>
+          <text class="t-chip-sub" x="728" y="204">Subscribes to referral</text>
+          <text class="t-chip-sub" x="728" y="216">Tasks</text>
+
+          <!-- row 2 -->
+          <path class="edge-em" d="M446,244 L446,282" marker-end="url(#c-a)"/>
+          <text class="t-edge" x="454" y="268">FHIR REST</text>
+          <path class="edge" d="M622,244 L622,282" marker-end="url(#c-p)"/>
+          <text class="t-edge" x="630" y="268">FHIR SDC</text>
+          <path class="edge" d="M798,244 L798,282" marker-end="url(#c-p)" marker-start="url(#c-p)"/>
+          <text class="t-edge" x="806" y="268">Subscription</text>
+
+          <rect class="box-harper" x="364" y="282" width="516" height="82" rx="2"/>
+          <text class="t-chip" x="378" y="302">hapi-fhir</text>
+          <text class="t-chip-sub" x="378" y="318">Deployment + Service · R4 / US Core profiles · terminology $expand · AuditEvent and Provenance</text>
+          <rect class="chip" x="378" y="326" width="240" height="26" rx="2"/>
+          <text class="t-chip-sub" x="390" y="343">FHIR Subscriptions drive the worklist</text>
+          <rect class="chip" x="630" y="326" width="238" height="26" rx="2"/>
+          <text class="t-chip-sub" x="642" y="343">snowstorm — optional, SNOMED CT</text>
+
+          <!-- row 3 -->
+          <path class="edge" d="M622,364 L622,400" marker-end="url(#c-p)"/>
+          <text class="t-edge" x="630" y="386">JDBC · TLS</text>
+
+          <rect class="box" x="364" y="400" width="516" height="82" rx="2"/>
+          <text class="t-chip" x="378" y="420">postgresql</text>
+          <text class="t-chip-sub" x="378" y="436">StatefulSet + PersistentVolumeClaim, or a managed database</text>
+          <text class="t-chip-sub" x="378" y="452">Encrypted at rest · scheduled backups · the only stateful workload</text>
+          <text class="t-chip-sub" x="378" y="470">Requests 250m / 256Mi · limits 1000m / 768Mi on the decision service</text>
+
+          <!-- config sidecar -->
+          <rect class="box-ext" x="900" y="282" width="176" height="200" rx="2"/>
+          <text class="t-chip" x="914" y="304">ConfigMap</text>
+          <text class="t-chip-sub" x="914" y="320">Eligibility rules, age band,</text>
+          <text class="t-chip-sub" x="914" y="333">thresholds, routing, card text</text>
+          <text class="t-chip" x="914" y="360">Secret</text>
+          <text class="t-chip-sub" x="914" y="376">OAuth2 client credentials,</text>
+          <text class="t-chip-sub" x="914" y="389">database passwords, TLS keys</text>
+          <text class="t-chip-sub" x="914" y="416">Mounted by every workload</text>
+          <text class="t-chip-sub" x="914" y="429">in this namespace.</text>
+          <text class="t-chip-sub" x="914" y="450">Administrators change rules</text>
+          <text class="t-chip-sub" x="914" y="463">here — configuration over</text>
+          <text class="t-chip-sub" x="914" y="476">code, no redeployment.</text>
+
+          <!-- footnote -->
+          <text class="t-chip-sub" x="20" y="530">Every component ships as an OCI image; the stack installs with Helm or Kustomize.</text>
+          <text class="t-chip-sub" x="20" y="546">The generated manifests carry no securityContext and no NetworkPolicy — add runAsNonRoot, readOnlyRootFilesystem, dropped capabilities and a network policy before deploying anywhere real.</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <span><i class="key k-ext"></i>Outside Harper, or non-workload object</span>
+        <span><i class="key k-harper"></i>Deployment</span>
+        <span><i class="key" style="border-color:var(--accent);background:var(--accent-soft)"></i>Autoscaled, stateless</span>
+      </div>
+      <figcaption><b>Figure 3 — Deployment topology</b>The decision service is stateless, which is what allows it to be the autoscaled component; PostgreSQL is the single stateful workload. All configuration that a safeguarding administrator would want to change — age band, chief-complaint value set, thresholds, routing, card text — lives in the ConfigMap rather than in an image.</figcaption>
+    </figure>
+
+    <h3>Same manifests, three footprints</h3>
+    <p>A site chooses its footprint without changing the application. What differs is where the trust boundary sits and whether the cluster can reach anything outside it.</p>
+
+    <figure>
+      <div class="figbody">
+        <svg class="midwide" viewBox="0 0 1120 256" role="img" aria-label="Three deployment footprints compared: managed cloud, where the cluster sits in a cloud region and reaches the hospital EHR over the network; on-premises, where both the EHR and the cluster sit inside the hospital data centre so PHI never leaves the building; and edge, where a single-node k3s or MicroShift cluster with a local FHIR store runs disconnected and reconciles with the central platform when connectivity returns.">
+          <defs>
+            <marker id="d-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--rule-2)"/>
+            </marker>
+            <marker id="d-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--signal)"/>
+            </marker>
+          </defs>
+
+          <!-- panel 1 -->
+          <text class="t-band" x="20" y="20">A · MANAGED CLOUD</text>
+          <rect class="box" x="20" y="32" width="140" height="52" rx="2"/>
+          <text class="t-chip" x="30" y="52">Hospital EHR</text>
+          <text class="t-chip-sub" x="30" y="68">in the hospital</text>
+          <path class="edge" d="M90,84 L90,116" marker-end="url(#d-p)" marker-start="url(#d-p)"/>
+          <text class="t-edge" x="98" y="104">TLS</text>
+          <rect class="box-ext" x="20" y="116" width="320" height="92" rx="2" stroke="var(--accent)"/>
+          <text class="t-band" x="32" y="136" fill="var(--accent)">CLOUD REGION — EKS / AKS / GKE</text>
+          <rect class="box-harper" x="32" y="144" width="296" height="52" rx="2"/>
+          <text class="t-chip" x="44" y="164">Full Harper stack</text>
+          <text class="t-chip-sub" x="44" y="180">Multi-replica · HPA · managed PostgreSQL</text>
+          <text class="t-chip-sub" x="20" y="240">PHI crosses the hospital boundary; scale is elastic.</text>
+
+          <!-- panel 2 -->
+          <text class="t-band" x="400" y="20">B · ON-PREMISES</text>
+          <rect class="box-ext" x="400" y="32" width="320" height="176" rx="2" stroke="var(--accent)"/>
+          <text class="t-band" x="412" y="52" fill="var(--accent)">HOSPITAL DATA CENTRE</text>
+          <rect class="box" x="412" y="60" width="296" height="46" rx="2"/>
+          <text class="t-chip" x="424" y="80">Hospital EHR</text>
+          <text class="t-chip-sub" x="424" y="95">same building, same network</text>
+          <path class="edge" d="M560,106 L560,138" marker-end="url(#d-p)" marker-start="url(#d-p)"/>
+          <text class="t-edge" x="568" y="126">TLS</text>
+          <rect class="box-harper" x="412" y="138" width="296" height="58" rx="2"/>
+          <text class="t-chip" x="424" y="158">Full Harper stack</text>
+          <text class="t-chip-sub" x="424" y="174">Same manifests · self-managed cluster</text>
+          <text class="t-chip-sub" x="424" y="188">Institution-run PostgreSQL</text>
+          <text class="t-chip-sub" x="400" y="240">PHI never leaves the building. Identical manifests.</text>
+
+          <!-- panel 3 -->
+          <text class="t-band" x="780" y="20">C · EDGE / DISCONNECTED</text>
+          <rect class="box-ext" x="780" y="32" width="320" height="118" rx="2" stroke="var(--accent)"/>
+          <text class="t-band" x="792" y="52" fill="var(--accent)">RURAL SITE — NO RELIABLE LINK</text>
+          <rect class="box-harper" x="792" y="60" width="296" height="76" rx="2"/>
+          <text class="t-chip" x="804" y="80">Single-node k3s / MicroShift</text>
+          <text class="t-chip-sub" x="804" y="96">Local FHIR store + decision service</text>
+          <text class="t-chip-sub" x="804" y="110">The screen runs whether or not the link is up</text>
+          <text class="t-chip-sub" x="804" y="124">Referrals queue locally</text>
+          <path class="edge-dash" d="M1060,150 L1060,186" marker-end="url(#d-s)" stroke="var(--signal)"/>
+          <text class="t-sig" x="1048" y="172" text-anchor="end">reconciles when the link returns</text>
+          <rect class="box-ext" x="780" y="186" width="320" height="34" rx="2"/>
+          <text class="t-chip-sub" x="792" y="207">Central FHIR platform · social-work queue · quality metrics</text>
+          <text class="t-chip-sub" x="780" y="240">Detection survives the outage; routing catches up.</text>
+        </svg>
+      </div>
+      <figcaption><b>Figure 4 — Three footprints, one set of manifests</b>The application does not change between them. What changes is the trust boundary and, at the edge, the fact that referral routing becomes eventually consistent — the screen still runs, and the queue drains when the link returns.</figcaption>
+    </figure>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Workloads</caption>
+        <thead><tr><th scope="col">Component</th><th scope="col">Kubernetes workload</th><th scope="col">Notes</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Process &amp; decision service</th><td>Deployment + Service; HPA</td><td>Stateless; runs BPMN/DMN and serves CDS Hooks. Quarkus start-up and footprint suit both cloud and edge nodes.</td></tr>
+          <tr><th scope="row">FHIR data platform</th><td>Deployment + Service</td><td>HAPI FHIR with US Core profiles, backed by PostgreSQL</td></tr>
+          <tr><th scope="row">FHIR database</th><td>StatefulSet + PVC, or managed</td><td>Encrypted at rest; scheduled backups</td></tr>
+          <tr><th scope="row">Screening app</th><td>Deployment + Service + Ingress</td><td>Renders the SDC questionnaire</td></tr>
+          <tr><th scope="row">Worklist app</th><td>Deployment + Service + Ingress</td><td>Subscribes to referral Tasks</td></tr>
+          <tr><th scope="row">Terminology service</th><td>Deployment + Service</td><td>ICD-10-CM, LOINC, SNOMED CT</td></tr>
+          <tr><th scope="row">Config &amp; secrets</th><td>ConfigMap / Secret</td><td>Thresholds, routing, card content, OAuth credentials</td></tr>
+          <tr><th scope="row">Ingress / TLS</th><td>Ingress or Gateway + cert-manager</td><td>TLS termination; the external endpoints</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════════ 08 ══════════════ -->
+  <section id="crosscutting">
+    <h2><span class="num">08</span><span>Cross-cutting concerns</span></h2>
+    <p class="srcref">Specification §7.6 – §7.7, §11</p>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Non-functional requirements</caption>
+        <thead><tr><th scope="col">Category</th><th scope="col">Requirement</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Security</th><td>OAuth2 / SMART scopes minimally necessary; encryption in transit and at rest; role-based access; hardened container images; CDS services pre-registered with the authorisation server.</td></tr>
+          <tr><th scope="row">Privacy</th><td>HIPAA compliance; special handling for minor confidentiality and 42 CFR Part 2, since the screen asks about substance use; data minimisation; no trafficking content visible to a bystander.</td></tr>
+          <tr><th scope="row">Latency</th><td>Eligibility evaluation and card return fast enough to be non-interruptive — sub-second to roughly two seconds at the point of care. Screen scoring within seconds of submission.</td></tr>
+          <tr><th scope="row">Availability</th><td>Kubernetes health probes, rolling updates, multi-replica services. Screening degrades gracefully and stays operable at edge sites without cloud connectivity.</td></tr>
+          <tr><th scope="row">Scalability</th><td>Peak ED volumes absorbed by horizontal scaling of the stateless decision service via HorizontalPodAutoscaler.</td></tr>
+          <tr><th scope="row">Conformance</th><td>Passes FHIR and US Core validation; CDS Hooks and SMART conformance; logic expressed as portable CQL and DMN.</td></tr>
+          <tr><th scope="row">Usability</th><td>Trauma-informed UI; English and Spanish; usable on a shared clinical tablet; minimal added clicks for the nurse.</td></tr>
+          <tr><th scope="row">Safety</th><td>Human-in-the-loop for all consequential actions; deterministic, explainable screening decision; no automated law-enforcement notification.</td></tr>
+          <tr><th scope="row">Maintainability</th><td>Versioned decision artefacts; configuration over code; observability and quality dashboards.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Audit and provenance</h3>
+    <p>Every automatically created or modified clinical resource carries a <code>Provenance</code> record, and every access to trafficking-related data and every CDS invocation writes an <code>AuditEvent</code>. Audit records are immutable and retained per institutional policy. A result references the exact version of the decision logic that produced it, so a flag raised eighteen months ago can still be reconstructed against the rules that were live at the time.</p>
+
+    <h3>What the system measures about itself</h3>
+    <div class="tablewrap">
+      <table>
+        <caption>Success metrics</caption>
+        <thead><tr><th scope="col">Metric</th><th scope="col">Why it matters</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Screening coverage</th><td>Share of eligible adolescents actually screened — the primary adoption signal against a roughly 1% baseline of hospitals that screen systematically</td></tr>
+          <tr><th scope="row">Screen completion time</th><td>Whether the instrument is feasible in a busy department</td></tr>
+          <tr><th scope="row">Positive-screen rate</th><td>Calibration and case-finding yield</td></tr>
+          <tr><th scope="row">Time to referral</th><td>Real-time intervention — the target is seconds from positive screen to social-work Task</td></tr>
+          <tr><th scope="row">Referral follow-through</th><td>Whether detection actually connects a patient to help</td></tr>
+          <tr><th scope="row">False-positive review burden</th><td>Operational load and positive predictive value in practice. Single-site validation reported PPV around 51%; plan for lower at the multi-site specificity in §05</td></tr>
+          <tr><th scope="row">Sustained performance</th><td>Sensitivity and specificity in production, guarding against drift from the validated profile</td></tr>
+          <tr><th scope="row">Provider experience</th><td>Card dismissal reasons and override rates — non-interruptiveness and trust</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════════ 09 ══════════════ -->
+  <section id="governance">
+    <h2><span class="num">09</span><span>Governance guardrails</span></h2>
+    <p class="srcref">Specification §12, §15 — the non-technical requirements are as binding as the technical ones</p>
+
+    <p>Harper screens minors and can trigger a referral. Several of the constraints below are architectural, not procedural: they are enforced by the shape of the system, and removing them would require changing the models rather than changing a policy document.</p>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Guardrails and how they are enforced</caption>
+        <thead><tr><th scope="col">Guardrail</th><th scope="col">Enforcement</th><th scope="col">Kind</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">A referral never routes on automation alone</th><td>The BPMN process creates <code>Task</code> as <code>draft</code> / <code>proposal</code>; only the practitioner's <em>Finalize</em> step moves it to <code>requested</code> / <code>order</code> and throws the signal that starts social work.</td><td><span class="tag tag-human">Architectural</span></td></tr>
+          <tr><th scope="row">No automated law-enforcement notification</th><td>No such path exists in any model. External notification is a separate, governed, human-initiated action aligned with federal, state and local policy.</td><td><span class="tag tag-human">Architectural</span></td></tr>
+          <tr><th scope="row">The screening decision is explainable</th><td>DMN decision tables and literal expressions; a <code>RiskAssessment</code> records the contributing items, and the logic version that produced it.</td><td><span class="tag tag-auto">Architectural</span></td></tr>
+          <tr><th scope="row">Triggering is clinical, not demographic</th><td>Eligibility derives only from the validated age band and a configurable chief-complaint value set — never from demographics or appearance.</td><td><span class="tag tag-auto">Architectural</span></td></tr>
+          <tr><th scope="row">Bystander safety</th><td>Screening is deferred until the patient can be seen alone; the UI never surfaces trafficking-specific labels where an accompanying person can see them.</td><td><span class="tag tag-human">Design + policy</span></td></tr>
+          <tr><th scope="row">Confidentiality of sensitive content</th><td>Role-restricted access to Flags, referrals and screen content; adolescent-confidentiality rules and 42 CFR Part 2 shape who sees what.</td><td><span class="tag tag-auto">Configuration</span></td></tr>
+          <tr><th scope="row">Mandatory reporting</th><td>The system supports, but never automates, the clinician's legal duty. Configuration must reflect local law.</td><td><span class="tag tag-human">Policy</span></td></tr>
+          <tr><th scope="row">Every action reconstructable</th><td><code>Provenance</code> and <code>AuditEvent</code> on every automated action and every access.</td><td><span class="tag tag-auto">Architectural</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      <h3>Licensing — read before deploying</h3>
+      <p>The repository is split-licensed. Everything Project Harper authored — the BPMN processes, the Kogito service, the DMN model structure, the documentation — is Apache-2.0. The <em>clinical content</em> encoded in the Greenbaum decision model is not Harper's to license: it derives from the Short Screen for Child Sex Trafficking, and its redistribution terms have not been established.</p>
+      <p>Assume permission is required. Obtain your own licensing determination from the rights holder before any clinical or commercial use, and do not treat the repository as authority that you may use the instrument. Whether encoding the items in DMN constitutes a permitted reproduction or a derivative work has not been reviewed by counsel. Status: unresolved and under review. Nothing here is legal advice.</p>
+    </div>
+
+    <h3>Open questions carried into the build</h3>
+    <ul class="plain">
+      <li>Which reference EHR to target first for the prototype — Epic, Oracle Health, or an open EHR such as OpenMRS.</li>
+      <li>Kogito DMN invocation style: a bare decision, as today, or an exposed DMN Decision Service — and the concrete process data model and typing that goes with it.</li>
+      <li>Consent model specifics per target jurisdiction and institutional policy.</li>
+      <li>Scope and governance of the optional ML triage aid for a first release.</li>
+      <li>A partial-screen path. Today every DMN input is required on every call and a missing field returns HTTP 500 rather than a validation error; adding one means defaulting at the API boundary or returning a 400.</li>
+    </ul>
+  </section>
+
+  </main>
+</div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <ul class="footlinks">
+      <li><a href="https://github.com/cushlabs/Harper">Repository</a></li>
+      <li><a href="https://github.com/cushlabs/Harper#run-it">Run it locally</a></li>
+      <li><a href="https://github.com/cushlabs/Harper/tree/main/models">BPMN &amp; DMN models</a></li>
+      <li><a href="https://github.com/cushlabs/Harper/tree/main/docs">Use-case specification</a></li>
+      <li><a href="https://github.com/cushlabs/Harper/blob/main/CONTRIBUTING.md">Contributing</a></li>
+      <li><a href="https://github.com/cushlabs/Harper/blob/main/SECURITY.md">Security policy</a></li>
+      <li><a href="https://github.com/cushlabs/Harper/issues">Issues</a></li>
+    </ul>
+    <p class="sig">Project Harper · Reference architecture · Target state</p>
+    <p>Derived from <em>Detecting Human Trafficking in the Emergency Department — An Open-Source Use-Case Specification</em>, version 1.2. Supersedes the HIMSS 2022 Interoperability Showcase use case “Detecting Human Trafficking”. This document discusses the screening of minors; handle it per your institutional policy.</p>
+    <p style="margin-top:14px">Code, models and documentation are licensed Apache-2.0. The Greenbaum screening instrument encoded in the decision models carries separate, unresolved terms — see <a href="https://github.com/cushlabs/Harper#license">the licence notice</a> before deploying. Synthetic data only; nothing here is for clinical use without appropriate governance, local validation and safeguards.</p>
+    <p class="footsrc">Source: docs/index.html · rebuild by editing that file, no build step</p>
+  </div>
+</footer>
+</body>
+</html>
