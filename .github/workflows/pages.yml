@@ -1,0 +1,74 @@
+name: Pages
+
+# Publishes docs/ to GitHub Pages: https://cushlabs.github.io/Harper/
+#
+# The site is one self-contained file — docs/index.html — plus its social
+# preview image. There is nothing to compile, so this workflow uploads the
+# directory as-is rather than running a static site generator. Editing
+# docs/index.html on main is the whole publishing process.
+#
+# Requires Settings -> Pages -> Source: "GitHub Actions". With that set, the
+# branch-based "Deploy from a branch" option is not used and docs/.nojekyll
+# becomes redundant (this path never invokes Jekyll). It is kept anyway so
+# that falling back to main -> /docs still serves the file verbatim.
+
+on:
+  push:
+    branches: [ main ]
+    # Only redeploy when the published directory or this workflow changes.
+    # Without this the site rebuilds on every unrelated service/ or ui/ commit.
+    paths:
+      - 'docs/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+# Least privilege at the workflow level; the deploy job elevates what it needs.
+permissions:
+  contents: read
+
+# Pages allows one concurrent deployment. cancel-in-progress is false here,
+# unlike CI: cancelling a deploy midway can leave the live site on a partially
+# published state, so in-flight runs are allowed to finish and the newest
+# queued run wins.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Actions are pinned to commit SHAs, not tags: a tag can be moved to point
+      # at new code, a SHA cannot. Dependabot bumps these; the trailing comment
+      # records which version each SHA corresponds to.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Fails the run before deploying if the entry point is missing or has been
+      # renamed — a 404 on the site root is otherwise only visible after deploy.
+      - name: Check the site entry point exists
+        run: test -f docs/index.html
+
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: docs
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write      # required to publish the artifact
+      id-token: write   # required for the deployment's OIDC token
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0

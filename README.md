@@ -6,6 +6,8 @@ Project Harper detects possible child sex trafficking in real time during an eme
 
 > **Synthetic data only.** Nothing here is for clinical use without appropriate governance, local validation, and safeguards.
 
+**[Reference architecture →](https://cushlabs.github.io/Harper/)** — the target-state design in one page: logical, runtime and Kubernetes deployment views, with the open standard named on every interface.
+
 ## How it works
 
 As a patient moves through registration → triage → examination → discharge, Harper watches the FHIR record, prompts the validated Greenbaum screen at the right moment, and scores risk with transparent, inspectable decision logic. A positive screen **drafts** a social-work referral; a licensed practitioner must **finalize** it before it routes. Automation assists — a clinician always decides — and the system never contacts law enforcement on its own.
@@ -18,9 +20,10 @@ FHIR R4 / US Core · CDS Hooks · SMART on FHIR · BPMN + DMN (Kogito) · Kubern
 
 ```
 .
-├── docs/                                 Specification and overview
+├── docs/                                 Specification, overview, and the published site
+│   ├── index.html                        Reference architecture — served at cushlabs.github.io/Harper
 │   ├── use-case-specification.docx       Full use-case spec (v1.2)
-│   └── what-is-project-harper.docx        One-page overview
+│   └── what-is-project-harper.docx       One-page overview
 ├── models/
 │   ├── bpmn/                             BPMN 2.0 process models
 │   │   ├── ed-encounter.bpmn              Orchestrator — one instance per ED encounter (executable)
@@ -100,6 +103,8 @@ The [`service/`](service/) module runs these BPMN/DMN files on Kogito (Kubernete
 ## Tests & CI
 
 The `service/` module is tested under one command — `mvn verify` from the repo root (unit + integration + coverage) — and [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs it on every push and pull request. Going forward, new processes and decisions land with tests. See [`service/README.md`](service/README.md#tests).
+
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) publishes [`docs/`](docs/) to <https://cushlabs.github.io/Harper/> when a change to that directory lands on `main`. The site is the single self-contained `docs/index.html` — no build step and no generator, so editing that file is the whole publishing process.
 
 ## License
 
