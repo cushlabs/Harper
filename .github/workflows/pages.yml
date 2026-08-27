@@ -7,10 +7,19 @@ name: Pages
 # directory as-is rather than running a static site generator. Editing
 # docs/index.html on main is the whole publishing process.
 #
-# Requires Settings -> Pages -> Source: "GitHub Actions". With that set, the
-# branch-based "Deploy from a branch" option is not used and docs/.nojekyll
-# becomes redundant (this path never invokes Jekyll). It is kept anyway so
-# that falling back to main -> /docs still serves the file verbatim.
+# One-time setup: Settings -> Pages -> Source: "GitHub Actions". Without it the
+# deploy fails with "Get Pages site failed ... Not Found" - the repository has
+# no Pages site to deploy to, and no workflow change fixes that.
+#
+# There is deliberately no actions/configure-pages step. That action exists to
+# provision Pages (its `enablement` input, which would also require
+# `pages: write` on the build job) and to emit base_url/base_path for site
+# generators that template a base path. This site needs neither: every asset
+# reference in docs/index.html is an absolute URL.
+#
+# With the source set to "GitHub Actions", docs/.nojekyll is redundant - this
+# path never invokes Jekyll - but it is kept so that falling back to the
+# branch-based "main -> /docs" source still serves the file verbatim.
 
 on:
   push:
@@ -51,8 +60,6 @@ jobs:
       # renamed — a 404 on the site root is otherwise only visible after deploy.
       - name: Check the site entry point exists
         run: test -f docs/index.html
-
-      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
